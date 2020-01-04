@@ -2,7 +2,7 @@
 #![allow(unused_attributes)]
 
 use elrond_wasm_debug::*;
-use erc20_rust::*;
+use erc20::*;
 use elrond_wasm_debug::HashMap;
 
 fn main() {

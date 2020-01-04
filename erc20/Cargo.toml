@@ -1,5 +1,5 @@
 [package]
-name = "erc20-rust"
+name = "erc20"
 version = "0.1.0"
 authors = ["andrei-marinica <andrei.marinica@elrond.com>"]
 edition = "2018"
