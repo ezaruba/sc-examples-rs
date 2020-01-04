@@ -1,0 +1,14 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "erc20-debug-build",
+            "command": "cargo",
+            "args": ["build"],
+            "options": {
+                "cwd": "${workspaceFolder}/erc20-rust-debug"
+            },
+            "type": "shell"
+        },
+    ]
+}
