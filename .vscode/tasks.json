@@ -6,7 +6,7 @@
             "command": "cargo",
             "args": ["build"],
             "options": {
-                "cwd": "${workspaceFolder}/erc20-debug"
+                "cwd": "${workspaceFolder}/erc20/debug"
             },
             "type": "shell"
         },

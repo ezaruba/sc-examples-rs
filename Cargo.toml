@@ -1,5 +1,5 @@
 [workspace]
 members = [
   "erc20",
-  "erc20-debug",
+  "erc20/debug",
 ]
