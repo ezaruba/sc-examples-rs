@@ -82,7 +82,7 @@ where
     let mut sender_balance = contract.storage_load_big_int(&sender_balance_key);
   
     // check if enough funds
-    if BI::compare(&amount, &sender_balance) > 0 {
+    if &amount > &sender_balance {
         contract.signal_error();
       return;
     }
@@ -102,7 +102,13 @@ where
 }
 
 #[elrond_wasm_derive::contract]
-pub trait Erc20Elrond {
+pub trait Erc20Elrond: ContractHookApi<BI, BU> + Sized 
+where 
+    BI: BigIntApi + 'static,
+    BU: BigUintApi<BI> + 'static,
+    for<'b> BI: AddAssign<&'b BI>,
+    for<'b> BI: SubAssign<&'b BI>,
+{
     /// constructor function
     /// is called immediately after the contract is created
     /// will set the fixed global token supply and give all the supply to the creator
@@ -148,7 +154,7 @@ pub trait Erc20Elrond {
         // sender is the caller
         let sender = self.get_caller();
 
-        if BI::compare(&amount, &BI::from(0)) < 0 {
+        if &amount < &BI::from(0) {
             self.signal_error();
             false;
         }
@@ -182,7 +188,7 @@ pub trait Erc20Elrond {
         let mut allowance = self.storage_load_big_int(&allowance_key);
 
         // amount should not exceed allowance
-        if BI::compare(&amount, &allowance) > 0 {
+        if &amount > &allowance {
             self.signal_error();
             return false;
         }
