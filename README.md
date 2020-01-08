@@ -15,5 +15,10 @@ cargo build --bin wasm --target=wasm32-unknown-unknown --release
 
 To debug macros:
 ```
-cargo +nightly rustc -- -Z unstable-options --pretty=expanded > demacroed.rs
+cargo +nightly rustc --bin wasm -- -Z unstable-options --pretty=expanded > demacroed.rs
+```
+
+To check wasm size:
+```
+twiggy top -n 20 target/wasm32-unknown-unknown/release/wasm.wasm
 ```
