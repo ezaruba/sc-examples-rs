@@ -7,9 +7,9 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug ERC20 Example",
-            "preLaunchTask": "erc20-debug-build",
-            "program": "${workspaceFolder}/target/debug/erc20-debug",
+            "name": "Debug SimpleCoin",
+            "preLaunchTask": "simple-coin-debug-build",
+            "program": "${workspaceFolder}/target/debug/simple-coin-debug",
             "args": [],
             "cwd": "${workspaceFolder}"
         }

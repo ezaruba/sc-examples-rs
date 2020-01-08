@@ -1,8 +1,8 @@
 
 #![allow(unused_attributes)]
 
+use simple_coin::*;
 use elrond_wasm_debug::*;
-use erc20::*;
 use elrond_wasm_debug::HashMap;
 
 fn main() {
@@ -18,7 +18,7 @@ fn main() {
 
     // tx 1: init
     let mut tx1 = TxData::new_create(
-        Box::new(Erc20ElrondInst::new(mock_ref.clone())), 
+        Box::new(SimpleCoinElrondInst::new(mock_ref.clone())), 
         [0x11u8; 32].into(), 
         [0x22u8; 32].into());
     tx1.add_arg(vec![100u8]);

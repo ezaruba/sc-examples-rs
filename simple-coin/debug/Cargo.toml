@@ -1,5 +1,5 @@
 [package]
-name = "erc20-debug"
+name = "simple-coin-debug"
 version = "0.1.0"
 authors = ["andrei-marinica <andrei_m_marinica@yahoo.com>"]
 edition = "2018"
@@ -11,4 +11,4 @@ edition = "2018"
 elrond-wasm = { path = "../../../elrond-wasm-rs/elrond-wasm" }
 elrond-wasm-debug = { path = "../../../elrond-wasm-rs/elrond-wasm-debug" }
 
-erc20 = { path = ".." }
+simple-coin = { path = ".." }

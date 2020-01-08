@@ -96,7 +96,7 @@ where
 }
 
 #[elrond_wasm_derive::contract]
-pub trait Erc20Elrond: ContractHookApi<BI, BU> + Sized 
+pub trait SimpleCoinElrond: ContractHookApi<BI, BU> + Sized 
 where 
     BI: BigIntApi + 'static,
     BU: BigUintApi<BI> + 'static,
