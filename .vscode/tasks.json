@@ -2,6 +2,15 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "label": "adder-debug-build",
+            "command": "cargo",
+            "args": ["build"],
+            "options": {
+                "cwd": "${workspaceFolder}/adder/debug"
+            },
+            "type": "shell"
+        },
+        {
             "label": "simple-coin-debug-build",
             "command": "cargo",
             "args": ["build"],

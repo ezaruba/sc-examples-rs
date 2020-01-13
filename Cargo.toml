@@ -1,5 +1,7 @@
 [workspace]
 members = [
+  "adder",
+  "adder/debug",
   "simple-coin",
   "simple-coin/debug",
 ]

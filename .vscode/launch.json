@@ -7,6 +7,15 @@
         {
             "type": "lldb",
             "request": "launch",
+            "name": "Debug Adder",
+            "preLaunchTask": "adder-debug-build",
+            "program": "${workspaceFolder}/target/debug/adder-debug",
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
             "name": "Debug SimpleCoin",
             "preLaunchTask": "simple-coin-debug-build",
             "program": "${workspaceFolder}/target/debug/simple-coin-debug",
