@@ -6,11 +6,6 @@
 
 static TOTAL_SUPPLY_KEY: [u8; 32] = [0u8; 32];
 
-static APPROVE_EVENT:  [u8; 32] = [0x71,0x34,0x69,0x2B,0x23,0x0B,0x9E,0x1F,0xFA,0x39,0x09,0x89,0x04,0x72,0x21,0x34,0x15,0x96,0x52,0xB0,0x9C,0x5B,0xC4,0x1D,0x88,0xD6,0x69,0x87,0x79,0xD2,0x28,0xFF];
-static TRANSFER_EVENT: [u8; 32] = [0xF0,0x99,0xCD,0x8B,0xDE,0x55,0x78,0x14,0x84,0x2A,0x31,0x21,0xE8,0xDD,0xFD,0x43,0x3A,0x53,0x9B,0x8C,0x9F,0x14,0xBF,0x31,0xEB,0xF1,0x08,0xD1,0x2E,0x61,0x96,0xE9];
-
-
-
 /// Generates a balance key for some address.
 /// Used to map balances with their owners.
 fn balance_key(address: &Address) -> StorageKey {
@@ -49,27 +44,15 @@ fn allowance_key(from: &Address, to: &Address) -> StorageKey {
     }
   
     key.into()
-  }
-
-fn save_log_with_3_topics<T, BI>(contract: &T, topic1: &[u8; 32], topic2: &[u8; 32], topic3: &[u8; 32], value: &BI)
-where 
-    BI: BigIntApi,
-    T: ContractHookApi<BI>
-{
-    let topics = [*topic1, *topic2, *topic3];
-
-    let data_vec = value.get_bytes_big_endian_pad_right(32);
-  
-    // call api
-    contract.write_log(&topics[..], data_vec.as_slice());
 }
 
-fn perform_transfer<T, BI>(contract: &T, sender: Address, recipient: Address, amount: BI)
+fn perform_transfer<T, BI, BU>(contract: &T, sender: Address, recipient: Address, amount: BI)
 where 
-    BI: BigIntApi,
+    BI: BigIntApi + 'static,
+    BU: BigUintApi<BI> + 'static,
     for<'b> BI: AddAssign<&'b BI>,
     for<'b> BI: SubAssign<&'b BI>,
-    T: ContractHookApi<BI>
+    T: SimpleCoinElrond<BI, BU>
 {
     // load sender balance
     let sender_balance_key = balance_key(&sender);
@@ -92,7 +75,7 @@ where
     contract.storage_store_big_int(&rec_balance_key, &rec_balance);
   
     // log operation
-    save_log_with_3_topics(contract, &TRANSFER_EVENT, &sender.into(), &recipient.into(), &amount);
+    contract.transfer_event(&sender, &recipient, &amount);
 }
 
 #[elrond_wasm_derive::contract]
@@ -162,13 +145,18 @@ where
     fn approve(&self, recipient: Address, amount: BI) -> bool {
         // sender is the caller
         let sender = self.get_caller();
+
+        if &amount < &BI::from(0) {
+            self.signal_error();
+            return false;
+        }
       
         // store allowance
         let allowance_key = allowance_key(&sender, &recipient);
         self.storage_store_big_int(&allowance_key, &amount);
       
         // log operation
-        save_log_with_3_topics(self, &APPROVE_EVENT, &sender.into(), &recipient.into(), &amount);      
+        self.approve_event(&sender, &recipient, &amount);
         true
     }
  
@@ -176,6 +164,11 @@ where
     fn transferFrom(&self, sender: Address, recipient: Address, amount: BI) -> bool {
         // get caller
         let caller = self.get_caller();
+
+        if &amount < &BI::from(0) {
+            self.signal_error();
+            return false;
+        }
 
         // load allowance
         let allowance_key = allowance_key(&sender, &caller);
@@ -194,6 +187,10 @@ where
         perform_transfer(self, sender, recipient, amount);
         true
     }
+
+    #[event("0x7134692b230b9e1ffa39098904722134159652b09c5bc41d88d6698779d228ff")]
+    fn approve_event(&self, sender: &Address, recipient: &Address, amount: &BI);
+
+    #[event("0xf099cd8bde557814842a3121e8ddfd433a539b8c9f14bf31ebf108d12e6196e9")]
+    fn transfer_event(&self, sender: &Address, recipient: &Address, amount: &BI);
 }
-
-
