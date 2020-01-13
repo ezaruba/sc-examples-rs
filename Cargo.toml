@@ -2,6 +2,8 @@
 members = [
   "adder",
   "adder/debug",
+  "factorial",
+  "factorial/debug",
   "simple-coin",
   "simple-coin/debug",
 ]

@@ -11,6 +11,15 @@
             "type": "shell"
         },
         {
+            "label": "factorial-debug-build",
+            "command": "cargo",
+            "args": ["build"],
+            "options": {
+                "cwd": "${workspaceFolder}/factorial/debug"
+            },
+            "type": "shell"
+        },
+        {
             "label": "simple-coin-debug-build",
             "command": "cargo",
             "args": ["build"],
