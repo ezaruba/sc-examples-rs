@@ -46,38 +46,6 @@ fn allowance_key(from: &Address, to: &Address) -> StorageKey {
     key.into()
 }
 
-fn perform_transfer<T, BI, BU>(contract: &T, sender: Address, recipient: Address, amount: BI)
-where 
-    BI: BigIntApi + 'static,
-    BU: BigUintApi<BI> + 'static,
-    for<'b> BI: AddAssign<&'b BI>,
-    for<'b> BI: SubAssign<&'b BI>,
-    T: SimpleCoinElrond<BI, BU>
-{
-    // load sender balance
-    let sender_balance_key = balance_key(&sender);
-    let mut sender_balance = contract.storage_load_big_int(&sender_balance_key);
-  
-    // check if enough funds
-    if &amount > &sender_balance {
-        contract.signal_error();
-      return;
-    }
-  
-    // update sender balance
-    sender_balance -= &amount;
-    contract.storage_store_big_int(&sender_balance_key, &sender_balance);
-  
-    // load & update receiver balance
-    let rec_balance_key = balance_key(&recipient);
-    let mut rec_balance = contract.storage_load_big_int(&rec_balance_key);
-    rec_balance += &amount;
-    contract.storage_store_big_int(&rec_balance_key, &rec_balance);
-  
-    // log operation
-    contract.transfer_event(&sender, &recipient, &amount);
-}
-
 #[elrond_wasm_derive::contract]
 pub trait SimpleCoinElrond: ContractHookApi<BI, BU> + Sized 
 where 
@@ -126,6 +94,32 @@ where
         res
     }
 
+    #[private]
+    fn _perform_transfer(&self, sender: Address, recipient: Address, amount: BI) {
+        // load sender balance
+        let sender_balance_key = balance_key(&sender);
+        let mut sender_balance = self.storage_load_big_int(&sender_balance_key);
+    
+        // check if enough funds
+        if &amount > &sender_balance {
+            self.signal_error();
+        return;
+        }
+    
+        // update sender balance
+        sender_balance -= &amount;
+        self.storage_store_big_int(&sender_balance_key, &sender_balance);
+    
+        // load & update receiver balance
+        let rec_balance_key = balance_key(&recipient);
+        let mut rec_balance = self.storage_load_big_int(&rec_balance_key);
+        rec_balance += &amount;
+        self.storage_store_big_int(&rec_balance_key, &rec_balance);
+    
+        // log operation
+        self.transfer_event(&sender, &recipient, &amount);
+    }
+
     /// transfers tokens from sender to another account
     fn transferToken(&self, recipient: Address, amount: BI) -> bool {
         // sender is the caller
@@ -136,7 +130,7 @@ where
             false;
         }
         
-        perform_transfer(self, sender, recipient, amount);
+        self._perform_transfer(sender, recipient, amount);
         true
     }
 
@@ -184,7 +178,7 @@ where
         allowance -= &amount;
         self.storage_store_big_int(&allowance_key, &allowance);
 
-        perform_transfer(self, sender, recipient, amount);
+        self._perform_transfer(sender, recipient, amount);
         true
     }
 
