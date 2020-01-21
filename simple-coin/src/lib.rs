@@ -103,7 +103,7 @@ where
         // check if enough funds
         if &amount > &sender_balance {
             self.signal_error();
-        return;
+            return;
         }
     
         // update sender balance
@@ -127,7 +127,7 @@ where
 
         if &amount < &BI::from(0) {
             self.signal_error();
-            false;
+            return false;
         }
         
         self._perform_transfer(sender, recipient, amount);
