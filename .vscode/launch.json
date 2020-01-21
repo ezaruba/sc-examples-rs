@@ -17,6 +17,15 @@
         {
             "type": "lldb",
             "request": "launch",
+            "name": "Debug CryptoBubbles",
+            "preLaunchTask": "crypto-bubbles-debug-build",
+            "program": "${workspaceFolder}/target/debug/crypto-bubbles-debug",
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
             "name": "Debug Factorial",
             "preLaunchTask": "factorial-debug-build",
             "program": "${workspaceFolder}/target/debug/factorial-debug",

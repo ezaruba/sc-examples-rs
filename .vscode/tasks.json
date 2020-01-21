@@ -11,6 +11,15 @@
             "type": "shell"
         },
         {
+            "label": "crypto-bubbles-debug-build",
+            "command": "cargo",
+            "args": ["build"],
+            "options": {
+                "cwd": "${workspaceFolder}/crypto-bubbles/debug"
+            },
+            "type": "shell"
+        },
+        {
             "label": "factorial-debug-build",
             "command": "cargo",
             "args": ["build"],
