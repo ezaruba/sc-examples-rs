@@ -6,12 +6,6 @@
 
 static OWNER_KEY: [u8; 32] = [0u8; 32];
 
-static ERR_NOT_OWNER: i32 = 101; // a function that should only be called by the owner is called by someone else
-static ERR_JOIN_NOT_ENOUGH_FUNDS: i32 = 103; // cannot join game with given bet, because player does not have enough funds in the game 
-static ERR_WITHDRAW_TOO_MUCH: i32 = 104; // trying to withdraw more than the funds the player owns in game
-//static ERR_REWARD_TOO_MUCH: i32 = 105; // trying to reward more that the bet remaining in game
-//static ERR_CLEANING_GAME_WITH_NO_PLAYERS: i32 = 106; // when cleaning up a game, the game has no players
-
 /// Generates a balance key for some address.
 /// Used to map balances with their owners.
 fn player_balance_key(address: &Address) -> StorageKey {
@@ -73,7 +67,7 @@ pub trait CryptoBubbles
         let balance_key = player_balance_key(&player);
         let mut balance = self.storage_load_big_int(&balance_key);
         if amount > &balance {
-            self.signal_exit(ERR_WITHDRAW_TOO_MUCH);
+            self.signal_error("amount to withdraw must be less or equal to balance");
             return;
         }
         balance -= amount;
@@ -90,7 +84,7 @@ pub trait CryptoBubbles
         let balance_key = player_balance_key(&player);
         let mut balance = self.storage_load_big_int(&balance_key);
         if bet > &balance {
-            self.signal_exit(ERR_JOIN_NOT_ENOUGH_FUNDS);
+            self.signal_error("insufficient funds to join game");
             return;
         }
         balance -= bet;
@@ -114,7 +108,7 @@ pub trait CryptoBubbles
         let caller = self.get_caller();
         let owner: Address = self.storage_load_bytes32(&OWNER_KEY.into()).into();
         if caller != owner {
-            self.signal_exit(ERR_NOT_OWNER);
+            self.signal_error("invalid sender: only contract owner can reward winner");
             return;
         }
 

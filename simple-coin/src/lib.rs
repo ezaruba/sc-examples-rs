@@ -102,7 +102,7 @@ where
     
         // check if enough funds
         if &amount > &sender_balance {
-            self.signal_error();
+            self.signal_error("insufficient funds");
             return;
         }
     
@@ -126,7 +126,7 @@ where
         let sender = self.get_caller();
 
         if &amount < &BI::from(0) {
-            self.signal_error();
+            self.signal_error("transfer amount cannot be negative");
             return false;
         }
         
@@ -141,7 +141,7 @@ where
         let sender = self.get_caller();
 
         if &amount < &BI::from(0) {
-            self.signal_error();
+            self.signal_error("approve amount cannot be negative");
             return false;
         }
       
@@ -160,7 +160,7 @@ where
         let caller = self.get_caller();
 
         if &amount < &BI::from(0) {
-            self.signal_error();
+            self.signal_error("transfer amount cannot be negative");
             return false;
         }
 
@@ -170,7 +170,7 @@ where
 
         // amount should not exceed allowance
         if &amount > &allowance {
-            self.signal_error();
+            self.signal_error("allowance exceeded");
             return false;
         }
 
