@@ -29,6 +29,15 @@
             "type": "shell"
         },
         {
+            "label": "features-debug-build",
+            "command": "cargo",
+            "args": ["build"],
+            "options": {
+                "cwd": "${workspaceFolder}/features/debug"
+            },
+            "type": "shell"
+        },
+        {
             "label": "simple-coin-debug-build",
             "command": "cargo",
             "args": ["build"],

@@ -95,15 +95,14 @@ where
     }
 
     #[private]
-    fn _perform_transfer(&self, sender: Address, recipient: Address, amount: BI) {
+    fn _perform_transfer(&self, sender: Address, recipient: Address, amount: BI) -> Result<(), &str> {
         // load sender balance
         let sender_balance_key = balance_key(&sender);
         let mut sender_balance = self.storage_load_big_int(&sender_balance_key);
     
         // check if enough funds
         if &amount > &sender_balance {
-            self.signal_error("insufficient funds");
-            return;
+            return Err("insufficient funds");
         }
     
         // update sender balance
@@ -118,31 +117,30 @@ where
     
         // log operation
         self.transfer_event(&sender, &recipient, &amount);
+
+        Ok(())
     }
 
     /// transfers tokens from sender to another account
-    fn transferToken(&self, recipient: Address, amount: BI) -> bool {
+    fn transferToken(&self, recipient: Address, amount: BI) -> Result<(), &str> {
         // sender is the caller
         let sender = self.get_caller();
 
         if &amount < &BI::from(0) {
-            self.signal_error("transfer amount cannot be negative");
-            return false;
+            return Err("transfer amount cannot be negative");
         }
         
-        self._perform_transfer(sender, recipient, amount);
-        true
+        self._perform_transfer(sender, recipient, amount)
     }
 
     /// sender allows beneficiary to use given amount of tokens from sender's balance
     /// it will completely overwrite any previously existing allowance from sender to beneficiary
-    fn approve(&self, recipient: Address, amount: BI) -> bool {
+    fn approve(&self, recipient: Address, amount: BI) -> Result<(), &str> {
         // sender is the caller
         let sender = self.get_caller();
 
         if &amount < &BI::from(0) {
-            self.signal_error("approve amount cannot be negative");
-            return false;
+            return Err("approve amount cannot be negative");
         }
       
         // store allowance
@@ -151,17 +149,16 @@ where
       
         // log operation
         self.approve_event(&sender, &recipient, &amount);
-        true
+        Ok(())
     }
  
     /// caller uses allowance to transfer funds between 2 other accounts
-    fn transferFrom(&self, sender: Address, recipient: Address, amount: BI) -> bool {
+    fn transferFrom(&self, sender: Address, recipient: Address, amount: BI) -> Result<(), &str> {
         // get caller
         let caller = self.get_caller();
 
         if &amount < &BI::from(0) {
-            self.signal_error("transfer amount cannot be negative");
-            return false;
+            return Err("transfer amount cannot be negative");
         }
 
         // load allowance
@@ -170,16 +167,14 @@ where
 
         // amount should not exceed allowance
         if &amount > &allowance {
-            self.signal_error("allowance exceeded");
-            return false;
+            return Err("allowance exceeded");
         }
 
         // update allowance
         allowance -= &amount;
         self.storage_store_big_int(&allowance_key, &allowance);
 
-        self._perform_transfer(sender, recipient, amount);
-        true
+        self._perform_transfer(sender, recipient, amount)
     }
 
     #[event("0x7134692b230b9e1ffa39098904722134159652b09c5bc41d88d6698779d228ff")]

@@ -6,6 +6,8 @@ members = [
   "crypto-bubbles/debug",
   "factorial",
   "factorial/debug",
+  "features",
+  "features/debug",
   "simple-coin",
   "simple-coin/debug",
 ]

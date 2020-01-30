@@ -35,6 +35,15 @@
         {
             "type": "lldb",
             "request": "launch",
+            "name": "Debug Features",
+            "preLaunchTask": "features-debug-build",
+            "program": "${workspaceFolder}/target/debug/features-debug",
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
             "name": "Debug SimpleCoin",
             "preLaunchTask": "simple-coin-debug-build",
             "program": "${workspaceFolder}/target/debug/simple-coin-debug",
