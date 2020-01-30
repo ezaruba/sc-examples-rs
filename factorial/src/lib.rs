@@ -10,10 +10,10 @@ pub trait Factorial {
     fn init(&self) {
     }
 
-    fn factorial(&self, value: BI) -> BI {
-        let mut result = BI::from(1);
-        let one = BI::from(1);
-        let mut x = BI::from(1);
+    fn factorial(&self, value: BigInt) -> BigInt {
+        let mut result = BigInt::from(1);
+        let one = BigInt::from(1);
+        let mut x = BigInt::from(1);
         while &x <= &value {
             result *= &x;
             x += &one;

@@ -36,7 +36,7 @@ pub trait CryptoBubbles
     }
 
     /// getter function: retrieves balance for an account
-    fn balanceOf(&self, subject: Address) -> BI {
+    fn balanceOf(&self, subject: Address) -> BigInt {
         let balance_key = player_balance_key(&subject);
         let balance = self.storage_load_big_int(&balance_key);
         balance
@@ -57,13 +57,13 @@ pub trait CryptoBubbles
     }
 
     /// player withdraws funds
-    fn withdraw(&self, amount: &BI) -> Result<(), &str> {
+    fn withdraw(&self, amount: &BigInt) -> Result<(), &str> {
         self._transferBackToPlayerWallet(&self.get_caller(), amount)
     }
 
     /// server calls withdraw on behalf of the player
     #[private]
-    fn _transferBackToPlayerWallet(&self, player: &Address, amount: &BI) -> Result<(), &str> {
+    fn _transferBackToPlayerWallet(&self, player: &Address, amount: &BigInt) -> Result<(), &str> {
         let balance_key = player_balance_key(&player);
         let mut balance = self.storage_load_big_int(&balance_key);
         if amount > &balance {
@@ -81,7 +81,7 @@ pub trait CryptoBubbles
 
     /// player joins game
     #[private]
-    fn _addPlayerToGameStateChange(&self, game_index: &BI, player: &Address, bet: &BI) -> Result<(), &str> {
+    fn _addPlayerToGameStateChange(&self, game_index: &BigInt, player: &Address, bet: &BigInt) -> Result<(), &str> {
         let balance_key = player_balance_key(&player);
         let mut balance = self.storage_load_big_int(&balance_key);
         if bet > &balance {
@@ -97,7 +97,7 @@ pub trait CryptoBubbles
 
     // player tops up + joins a game
     #[payable]
-    fn joinGame(&self, game_index: BI) -> Result<(), &str> {
+    fn joinGame(&self, game_index: BigInt) -> Result<(), &str> {
         let player = self.get_caller();
         let bet = self.get_call_value_big_int();
 
@@ -106,7 +106,7 @@ pub trait CryptoBubbles
     }
 
     // owner transfers prize into winner SC account
-    fn rewardWinner(&self, game_index: &BI, winner: &Address, prize: &BI) -> Result<(), &str> {
+    fn rewardWinner(&self, game_index: &BigInt, winner: &Address, prize: &BigInt) -> Result<(), &str> {
         let caller = self.get_caller();
         let owner: Address = self.storage_load_bytes32(&OWNER_KEY.into()).into();
         if caller != owner {
@@ -124,20 +124,20 @@ pub trait CryptoBubbles
     }
 
     // owner transfers prize into winner SC account, then transfers funds to player wallet
-    fn rewardAndSendToWallet(&self, game_index: &BI, winner: &Address, prize: &BI) -> Result<(), &str> {
+    fn rewardAndSendToWallet(&self, game_index: &BigInt, winner: &Address, prize: &BigInt) -> Result<(), &str> {
         self.rewardWinner(game_index, winner, prize)?;
         self._transferBackToPlayerWallet(winner, prize)
     }
 
     #[event("0x1000000000000000000000000000000000000000000000000000000000000001")]
-    fn top_up_event(&self, player: &Address, amount: &BI);
+    fn top_up_event(&self, player: &Address, amount: &BigInt);
 
     #[event("0x1000000000000000000000000000000000000000000000000000000000000002")]
-    fn withdraw_event(&self, player: &Address, amount: &BI);
+    fn withdraw_event(&self, player: &Address, amount: &BigInt);
     
     #[event("0x1000000000000000000000000000000000000000000000000000000000000003")]
-    fn player_joins_game_event(&self, game_index: &BI, player: &Address, bet: &BI);
+    fn player_joins_game_event(&self, game_index: &BigInt, player: &Address, bet: &BigInt);
     
     #[event("0x1000000000000000000000000000000000000000000000000000000000000004")]
-    fn reward_winner_event(&self, game_index: &BI, winner: &Address, prize: &BI);
+    fn reward_winner_event(&self, game_index: &BigInt, winner: &Address, prize: &BigInt);
 }

@@ -47,17 +47,11 @@ fn allowance_key(from: &Address, to: &Address) -> StorageKey {
 }
 
 #[elrond_wasm_derive::contract]
-pub trait SimpleCoinElrond: ContractHookApi<BI, BU> + Sized 
-where 
-    BI: BigIntApi + 'static,
-    BU: BigUintApi<BI> + 'static,
-    for<'b> BI: AddAssign<&'b BI>,
-    for<'b> BI: SubAssign<&'b BI>,
-{
+pub trait SimpleCoinElrond {
     /// constructor function
     /// is called immediately after the contract is created
     /// will set the fixed global token supply and give all the supply to the creator
-    fn init(&self, total_supply: &BI) {
+    fn init(&self, total_supply: &BigInt) {
         let sender = self.get_caller();
 
         // save total supply
@@ -69,13 +63,13 @@ where
     }
 
     /// getter function: retrieves total token supply
-    fn totalSupply(&self) -> BI {
+    fn totalSupply(&self) -> BigInt {
         let total_supply = self.storage_load_big_int(&TOTAL_SUPPLY_KEY.into());
         total_supply
     }
 
     /// getter function: retrieves balance for an account
-    fn balanceOf(&self, subject: Address) -> BI {
+    fn balanceOf(&self, subject: Address) -> BigInt {
         // load balance
         let balance_key = balance_key(&subject);
         let balance = self.storage_load_big_int(&balance_key);
@@ -85,7 +79,7 @@ where
     }
 
     /// getter function: retrieves allowance granted from one account to another
-    fn allowance(&self, sender: Address, recipient: Address) -> BI {
+    fn allowance(&self, sender: Address, recipient: Address) -> BigInt {
         // get allowance
         let allowance_key = allowance_key(&sender, &recipient);
         let res = self.storage_load_big_int(&allowance_key);
@@ -95,7 +89,7 @@ where
     }
 
     #[private]
-    fn _perform_transfer(&self, sender: Address, recipient: Address, amount: BI) -> Result<(), &str> {
+    fn _perform_transfer(&self, sender: Address, recipient: Address, amount: BigInt) -> Result<(), &str> {
         // load sender balance
         let sender_balance_key = balance_key(&sender);
         let mut sender_balance = self.storage_load_big_int(&sender_balance_key);
@@ -122,11 +116,11 @@ where
     }
 
     /// transfers tokens from sender to another account
-    fn transferToken(&self, recipient: Address, amount: BI) -> Result<(), &str> {
+    fn transferToken(&self, recipient: Address, amount: BigInt) -> Result<(), &str> {
         // sender is the caller
         let sender = self.get_caller();
 
-        if &amount < &BI::from(0) {
+        if &amount < &BigInt::from(0) {
             return Err("transfer amount cannot be negative");
         }
         
@@ -135,11 +129,11 @@ where
 
     /// sender allows beneficiary to use given amount of tokens from sender's balance
     /// it will completely overwrite any previously existing allowance from sender to beneficiary
-    fn approve(&self, recipient: Address, amount: BI) -> Result<(), &str> {
+    fn approve(&self, recipient: Address, amount: BigInt) -> Result<(), &str> {
         // sender is the caller
         let sender = self.get_caller();
 
-        if &amount < &BI::from(0) {
+        if &amount < &BigInt::from(0) {
             return Err("approve amount cannot be negative");
         }
       
@@ -153,11 +147,11 @@ where
     }
  
     /// caller uses allowance to transfer funds between 2 other accounts
-    fn transferFrom(&self, sender: Address, recipient: Address, amount: BI) -> Result<(), &str> {
+    fn transferFrom(&self, sender: Address, recipient: Address, amount: BigInt) -> Result<(), &str> {
         // get caller
         let caller = self.get_caller();
 
-        if &amount < &BI::from(0) {
+        if &amount < &BigInt::from(0) {
             return Err("transfer amount cannot be negative");
         }
 
@@ -178,8 +172,8 @@ where
     }
 
     #[event("0x7134692b230b9e1ffa39098904722134159652b09c5bc41d88d6698779d228ff")]
-    fn approve_event(&self, sender: &Address, recipient: &Address, amount: &BI);
+    fn approve_event(&self, sender: &Address, recipient: &Address, amount: &BigInt);
 
     #[event("0xf099cd8bde557814842a3121e8ddfd433a539b8c9f14bf31ebf108d12e6196e9")]
-    fn transfer_event(&self, sender: &Address, recipient: &Address, amount: &BI);
+    fn transfer_event(&self, sender: &Address, recipient: &Address, amount: &BigInt);
 }
