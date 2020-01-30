@@ -57,18 +57,17 @@ pub trait CryptoBubbles
     }
 
     /// player withdraws funds
-    fn withdraw(&self, amount: &BI) {
-        self._transferBackToPlayerWallet(&self.get_caller(), amount);
+    fn withdraw(&self, amount: &BI) -> Result<(), &str> {
+        self._transferBackToPlayerWallet(&self.get_caller(), amount)
     }
 
     /// server calls withdraw on behalf of the player
     #[private]
-    fn _transferBackToPlayerWallet(&self, player: &Address, amount: &BI) {
+    fn _transferBackToPlayerWallet(&self, player: &Address, amount: &BI) -> Result<(), &str> {
         let balance_key = player_balance_key(&player);
         let mut balance = self.storage_load_big_int(&balance_key);
         if amount > &balance {
-            self.signal_error("amount to withdraw must be less or equal to balance");
-            return;
+            return Err("amount to withdraw must be less or equal to balance");
         }
         balance -= amount;
         self.storage_store_big_int(&balance_key, &balance);
@@ -76,40 +75,42 @@ pub trait CryptoBubbles
         self.send_tx(player, &amount, "crypto bubbles");
 
         self.withdraw_event(player, amount);
+
+        Ok(())
     }
 
     /// player joins game
     #[private]
-    fn _addPlayerToGameStateChange(&self, game_index: &BI, player: &Address, bet: &BI) {
+    fn _addPlayerToGameStateChange(&self, game_index: &BI, player: &Address, bet: &BI) -> Result<(), &str> {
         let balance_key = player_balance_key(&player);
         let mut balance = self.storage_load_big_int(&balance_key);
         if bet > &balance {
-            self.signal_error("insufficient funds to join game");
-            return;
+            return Err("insufficient funds to join game");
         }
         balance -= bet;
         self.storage_store_big_int(&balance_key, &balance);
 
         self.player_joins_game_event(game_index, player, bet);
+
+        Ok(())
     }
 
     // player tops up + joins a game
     #[payable]
-    fn joinGame(&self, game_index: BI) {
+    fn joinGame(&self, game_index: BI) -> Result<(), &str> {
         let player = self.get_caller();
         let bet = self.get_call_value_big_int();
 
         self.topUp();
-        self._addPlayerToGameStateChange(&game_index, &player, &bet);
+        self._addPlayerToGameStateChange(&game_index, &player, &bet)
     }
 
     // owner transfers prize into winner SC account
-    fn rewardWinner(&self, game_index: &BI, winner: &Address, prize: &BI) {
+    fn rewardWinner(&self, game_index: &BI, winner: &Address, prize: &BI) -> Result<(), &str> {
         let caller = self.get_caller();
         let owner: Address = self.storage_load_bytes32(&OWNER_KEY.into()).into();
         if caller != owner {
-            self.signal_error("invalid sender: only contract owner can reward winner");
-            return;
+            return Err("invalid sender: only contract owner can reward winner");
         }
 
         let balance_key = player_balance_key(&winner);
@@ -117,13 +118,15 @@ pub trait CryptoBubbles
         balance += prize;
         self.storage_store_big_int(&balance_key, &balance);
 
-        self.reward_winner_event(game_index, &winner, &prize)
+        self.reward_winner_event(game_index, &winner, &prize);
+
+        Ok(())
     }
 
     // owner transfers prize into winner SC account, then transfers funds to player wallet
-    fn rewardAndSendToWallet(&self, game_index: &BI, winner: &Address, prize: &BI) {
-        self.rewardWinner(game_index, winner, prize);
-        self._transferBackToPlayerWallet(winner, prize);
+    fn rewardAndSendToWallet(&self, game_index: &BI, winner: &Address, prize: &BI) -> Result<(), &str> {
+        self.rewardWinner(game_index, winner, prize)?;
+        self._transferBackToPlayerWallet(winner, prize)
     }
 
     #[event("0x1000000000000000000000000000000000000000000000000000000000000001")]
