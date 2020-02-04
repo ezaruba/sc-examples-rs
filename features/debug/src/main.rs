@@ -28,5 +28,14 @@ fn main() {
     assert_eq!(0, result1.result_status);
     result1.print();
 
-
+    // tx 2: execute
+    let mut tx2 = TxData::new_call(
+        "computeKeccak256", 
+        ADDR1.into(), 
+        ADDR2.into());
+    //tx2.add_arg(vec!['a' as u8]);
+    tx2.add_arg(vec![01u8, 02u8, 03u8, 04u8, 05u8, 06u8, 07u8, 08u8]);
+    let result2 = mock_ref.execute_tx(tx2);
+    assert_eq!(0, result2.result_status);
+    result2.print();
 }

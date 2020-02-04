@@ -26,8 +26,12 @@ pub trait ApiFeatureExamples {
         (value, l)
     }
 
-    fn badVec(&self, _bad: Vec<u8>) -> Result<Vec<u8>, &str> {
-        Ok(Vec::with_capacity(0))
+    fn computeSha256(&self, input: Vec<u8>) -> Vec<u8> {
+        self.sha256(&input).as_ref().into()
+    }
+
+    fn computeKeccak256(&self, input: Vec<u8>) -> Vec<u8> {
+        self.keccak256(&input).as_ref().into()
     }
 
 }
