@@ -6,46 +6,6 @@
 
 static TOTAL_SUPPLY_KEY: [u8; 32] = [0u8; 32];
 
-/// Generates a balance key for some address.
-/// Used to map balances with their owners.
-fn balance_key(address: &Address) -> StorageKey {
-  let mut key = [0u8; 32];
-  // reserve one byte of the key to indicate key type
-  // "1" is for balance keys
-  key[0] = 1;
-
-  // the last 2 bytes of the address are only used to identify the shard, 
-  // so they are disposable when constructing the key
-  let addr_bytes: [u8; 32] = *address.as_fixed_bytes();
-  for i in 0..30 {
-    key[2+i] = addr_bytes[i];
-  }
-
-  key.into()
-}
-
-fn allowance_key(from: &Address, to: &Address) -> StorageKey {
-    let mut key = [0u8; 32];
-    // reserve one byte of the key to indicate key type
-    // "2" is for allowance keys
-    key[0] = 2;
-  
-    // Note: in smart contract addresses, the first 10 bytes are all 0
-    // therefore we read from byte 10 onwards to provide more significant bytes
-    // and to minimize the chance for collisions
-    // TODO: switching to a hash instead of a concatenation of addresses might make it safer
-    let from_bytes: [u8; 32] = *from.as_fixed_bytes();
-    for i in 0..15 {
-      key[1+i] = from_bytes[10+i];
-    }
-    let to_bytes: [u8; 32] = *to.as_fixed_bytes();
-    for i in 0..16 {
-      key[16+i] = to_bytes[10+i];
-    }
-  
-    key.into()
-}
-
 #[elrond_wasm_derive::contract]
 pub trait SimpleCoinElrond {
     /// constructor function
@@ -58,7 +18,7 @@ pub trait SimpleCoinElrond {
         self.storage_store_big_int(&TOTAL_SUPPLY_KEY.into(), &total_supply);
 
         // sender balance <- total supply
-        let balance_key = balance_key(&sender);
+        let balance_key = self._balance_key(&sender);
         self.storage_store_big_int(&balance_key, &total_supply);
     }
 
@@ -68,10 +28,31 @@ pub trait SimpleCoinElrond {
         total_supply
     }
 
+    /// generates the balance key that maps balances with their owners
+    #[private]
+    fn _balance_key(&self, address: &Address) -> StorageKey {
+        let mut raw_key: Vec<u8> = Vec::with_capacity(33);
+        raw_key.push(1u8); // "1" is for balance keys
+        raw_key.extend_from_slice(address.as_fixed_bytes()); // append the entire address
+        let key = self.keccak256(&raw_key); // this compresses the key down to 32 bytes
+        key.into()
+    }
+
+    /// generates the allowance key that maps allowances with the respective sender-receiver pairs
+    #[private]
+    fn _allowance_key(&self, from: &Address, to: &Address) -> StorageKey {
+        let mut raw_key: Vec<u8> = Vec::with_capacity(65);
+        raw_key.push(2u8); // "2" is for balance keys
+        raw_key.extend_from_slice(from.as_fixed_bytes()); // append the entire "from" address
+        raw_key.extend_from_slice(to.as_fixed_bytes()); // append the entire "to" address
+        let key = self.keccak256(&raw_key); // this compresses the key down to 32 bytes
+        key.into()
+    }
+
     /// getter function: retrieves balance for an account
     fn balanceOf(&self, subject: Address) -> BigInt {
         // load balance
-        let balance_key = balance_key(&subject);
+        let balance_key = self._balance_key(&subject);
         let balance = self.storage_load_big_int(&balance_key);
 
         // return balance as big int
@@ -81,7 +62,7 @@ pub trait SimpleCoinElrond {
     /// getter function: retrieves allowance granted from one account to another
     fn allowance(&self, sender: Address, recipient: Address) -> BigInt {
         // get allowance
-        let allowance_key = allowance_key(&sender, &recipient);
+        let allowance_key = self._allowance_key(&sender, &recipient);
         let res = self.storage_load_big_int(&allowance_key);
 
         // return allowance as big int
@@ -91,7 +72,7 @@ pub trait SimpleCoinElrond {
     #[private]
     fn _perform_transfer(&self, sender: Address, recipient: Address, amount: BigInt) -> Result<(), &str> {
         // load sender balance
-        let sender_balance_key = balance_key(&sender);
+        let sender_balance_key = self._balance_key(&sender);
         let mut sender_balance = self.storage_load_big_int(&sender_balance_key);
     
         // check if enough funds
@@ -104,7 +85,7 @@ pub trait SimpleCoinElrond {
         self.storage_store_big_int(&sender_balance_key, &sender_balance);
     
         // load & update receiver balance
-        let rec_balance_key = balance_key(&recipient);
+        let rec_balance_key = self._balance_key(&recipient);
         let mut rec_balance = self.storage_load_big_int(&rec_balance_key);
         rec_balance += &amount;
         self.storage_store_big_int(&rec_balance_key, &rec_balance);
@@ -138,7 +119,7 @@ pub trait SimpleCoinElrond {
         }
       
         // store allowance
-        let allowance_key = allowance_key(&sender, &recipient);
+        let allowance_key = self._allowance_key(&sender, &recipient);
         self.storage_store_big_int(&allowance_key, &amount);
       
         // log operation
@@ -156,7 +137,7 @@ pub trait SimpleCoinElrond {
         }
 
         // load allowance
-        let allowance_key = allowance_key(&sender, &caller);
+        let allowance_key = self._allowance_key(&sender, &caller);
         let mut allowance = self.storage_load_big_int(&allowance_key);
 
         // amount should not exceed allowance
