@@ -6,24 +6,6 @@
 
 static OWNER_KEY: [u8; 32] = [0u8; 32];
 
-/// Generates a balance key for some address.
-/// Used to map balances with their owners.
-fn player_balance_key(address: &Address) -> StorageKey {
-  let mut key = [0u8; 32];
-  // reserve one byte of the key to indicate key type
-  // "1" is for balance keys
-  key[0] = 1;
-
-  // the last 2 bytes of the address are only used to identify the shard, 
-  // so they are disposable when constructing the key
-  let addr_bytes: [u8; 32] = *address.as_fixed_bytes();
-  for i in 0..30 {
-    key[2+i] = addr_bytes[i];
-  }
-
-  key.into()
-}
-
 #[elrond_wasm_derive::contract]
 pub trait CryptoBubbles
 {
@@ -35,9 +17,19 @@ pub trait CryptoBubbles
         self.storage_store_bytes32(&OWNER_KEY.into(), &sender.into());
     }
 
+    /// generates the balance key that maps balances with their owners
+    #[private]
+    fn _player_balance_key(&self, address: &Address) -> StorageKey {
+        let mut raw_key: Vec<u8> = Vec::with_capacity(33);
+        raw_key.push(1u8); // "1" is for balance keys
+        raw_key.extend_from_slice(address.as_fixed_bytes()); // append the entire address
+        let key = self.keccak256(&raw_key); // this compresses the key down to 32 bytes
+        key.into()
+    }
+
     /// getter function: retrieves balance for an account
     fn balanceOf(&self, subject: Address) -> BigInt {
-        let balance_key = player_balance_key(&subject);
+        let balance_key = self._player_balance_key(&subject);
         let balance = self.storage_load_big_int(&balance_key);
         balance
     }
@@ -48,7 +40,7 @@ pub trait CryptoBubbles
         let caller = self.get_caller();
         let call_value = self.get_call_value_big_int();
         
-        let balance_key = player_balance_key(&caller);
+        let balance_key = self._player_balance_key(&caller);
         let mut balance = self.storage_load_big_int(&balance_key);
         balance += &call_value;
         self.storage_store_big_int(&balance_key, &balance);
@@ -64,7 +56,7 @@ pub trait CryptoBubbles
     /// server calls withdraw on behalf of the player
     #[private]
     fn _transferBackToPlayerWallet(&self, player: &Address, amount: &BigInt) -> Result<(), &str> {
-        let balance_key = player_balance_key(&player);
+        let balance_key = self._player_balance_key(&player);
         let mut balance = self.storage_load_big_int(&balance_key);
         if amount > &balance {
             return Err("amount to withdraw must be less or equal to balance");
@@ -82,7 +74,7 @@ pub trait CryptoBubbles
     /// player joins game
     #[private]
     fn _addPlayerToGameStateChange(&self, game_index: &BigInt, player: &Address, bet: &BigInt) -> Result<(), &str> {
-        let balance_key = player_balance_key(&player);
+        let balance_key = self._player_balance_key(&player);
         let mut balance = self.storage_load_big_int(&balance_key);
         if bet > &balance {
             return Err("insufficient funds to join game");
@@ -113,7 +105,7 @@ pub trait CryptoBubbles
             return Err("invalid sender: only contract owner can reward winner");
         }
 
-        let balance_key = player_balance_key(&winner);
+        let balance_key = self._player_balance_key(&winner);
         let mut balance = self.storage_load_big_int(&balance_key);
         balance += prize;
         self.storage_store_big_int(&balance_key, &balance);
