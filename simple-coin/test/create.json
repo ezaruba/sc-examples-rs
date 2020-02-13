@@ -82,7 +82,7 @@
                     "0x4f77fb908938adf8ff6a16fc62ebfbe8c8fd55f225233a5faf4ec70dd24a4074": "0x2710",
                     "0x0000000000000000000000000000000000000000000000000000000000000000": "0x2710"
                 },
-                "code": "simple-coin.wasm"
+                "code": "../target/wasm32-unknown-unknown/release/wasm.wasm"
             }
         }
     }

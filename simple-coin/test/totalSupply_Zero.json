@@ -11,7 +11,7 @@
                 "nonce": "0x00",
                 "balance": "0x00",
                 "storage": {},
-                "code": "simple-coin.wasm"
+                "code": "../target/wasm32-unknown-unknown/release/wasm.wasm"
             }
         },
         "blocks": [
@@ -65,7 +65,7 @@
                 "nonce": "0x00",
                 "balance": "0x00",
                 "storage": {},
-                "code": "simple-coin.wasm"
+                "code": "../target/wasm32-unknown-unknown/release/wasm.wasm"
             }
         }
     }
