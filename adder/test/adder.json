@@ -47,7 +47,7 @@
                         "arguments": [
                             "0x05"
                         ],
-                        "contractCode": "adder.iele",
+                        "contractCode": "../target/wasm32-unknown-unknown/release/wasm.wasm",
                         "gasPrice": "0x01",
                         "from": "0xacc1000000000000000000000000000000000000000000000000000000001234"
                     },
@@ -100,7 +100,7 @@
                 "storage": {
                     "0x61" : "0x08"
                 },
-                "code": "adder.iele"
+                "code": "../target/wasm32-unknown-unknown/release/wasm.wasm"
             }
         }
     }
