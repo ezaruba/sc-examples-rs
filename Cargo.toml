@@ -7,6 +7,8 @@ members = [
   "factorial",
   "factorial/debug",
   "features",
+  "features/async/alice",
+  "features/async/bob",
   "features/debug",
   "simple-coin",
   "simple-coin/debug",
