@@ -6,6 +6,7 @@
 
 static CALEE_STORAGE_KEY: [u8; 32] = [0u8; 32];
 static CALLBACK_INFO_KEY: [u8; 32] = [0x77u8; 32];
+static SOME_ADDRESS: [u8; 32] = [0xfeu8; 32];
 
 #[elrond_wasm_derive::callable(PayMeProxy)]
 pub trait PayMe {
@@ -20,13 +21,13 @@ pub trait PayMe {
 
 #[elrond_wasm_derive::callable(MessageMeProxy)]
 pub trait MessageMe {
-    fn messageMe(&self, _arg1: i32, _arg2: i64);
+    fn messageMe(&self, arg1: i64, arg2: &BigInt, arg3: &Vec<u8>, arg4: &Address);
 }
 
 #[elrond_wasm_derive::callable(MessageMeProxy)]
 pub trait MessageMeWithCallback {
     #[callback(messageCallback)]
-    fn messageMe(&self, _arg1: i32, _arg2: i64);
+    fn messageMe(&self, arg1: i64, arg2: BigInt, arg3: Vec<u8>, arg4: Address);
 }
 
 #[elrond_wasm_derive::contract(BobImpl)]
@@ -56,14 +57,14 @@ pub trait Alice {
         let calee_address: Address = self.storage_load_bytes32(&CALEE_STORAGE_KEY.into()).into();
 
         let target_contract = contract_proxy!(self, &calee_address, MessageMe);
-        target_contract.messageMe(0x46, 0x02);
+        target_contract.messageMe(0x01, &BigInt::from(0x02), &create_a_vec(), &SOME_ADDRESS.into());
     }
 
     fn messageOtherContractWithCallback(&self) {
         let calee_address: Address = self.storage_load_bytes32(&CALEE_STORAGE_KEY.into()).into();
 
         let target_contract = contract_proxy!(self, &calee_address, MessageMeWithCallback);
-        target_contract.messageMe(0x46, 0x02);
+        target_contract.messageMe(0x01, BigInt::from(0x02), create_a_vec(), SOME_ADDRESS.into());
     }
 
     #[callback]
@@ -75,4 +76,12 @@ pub trait Alice {
     fn messageCallback(&self) {
         self.storage_store_i64(&CALLBACK_INFO_KEY.into(), 0x5555);
     }
+}
+
+fn create_a_vec() -> Vec<u8> {
+    let mut res = Vec::with_capacity(3);
+    res.push(3);
+    res.push(3);
+    res.push(3);
+    res
 }
