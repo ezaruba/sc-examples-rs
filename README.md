@@ -16,8 +16,14 @@ cargo build --bin wasm --target=wasm32-unknown-unknown --release
 # Advanced
 
 To debug macros:
+- wasm mode:
 ```
 cargo +nightly rustc --bin wasm -- -Z unstable-options --pretty=expanded > demacroed.rs
+```
+
+- debug mode:
+```
+cargo +nightly rustc --lib -- -Z unstable-options --pretty=expanded > demacroed.rs
 ```
 
 To check wasm size:
