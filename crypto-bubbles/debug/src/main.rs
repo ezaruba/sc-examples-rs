@@ -20,7 +20,7 @@ fn main() {
 
     // tx 1: init
     let tx1 = TxData::new_create(
-        Box::new(CryptoBubblesInst::new(mock_ref.clone())), 
+        Box::new(CryptoBubblesImpl::new(mock_ref.clone())), 
         ADDR1.into(), 
         ADDR2.into());
     mock_ref.execute_tx(tx1);

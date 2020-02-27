@@ -21,7 +21,7 @@ fn main() {
 
     // tx 1: init
     let mut tx1 = TxData::new_create(
-        Box::new(AdderInst::new(mock_ref.clone())), 
+        Box::new(AdderImpl::new(mock_ref.clone())), 
         ADDR1.into(), 
         ADDR2.into());
     tx1.add_arg(vec![7u8]);

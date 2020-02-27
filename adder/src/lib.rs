@@ -6,7 +6,7 @@
 
 static A_KEY: [u8; 32] = [0u8; 32];
 
-#[elrond_wasm_derive::contract]
+#[elrond_wasm_derive::contract(AdderImpl)]
 pub trait Adder {
 
     fn init(&self, initial_value: &BigInt) {

@@ -6,7 +6,7 @@
 
 static OWNER_KEY: [u8; 32] = [0u8; 32];
 
-#[elrond_wasm_derive::contract]
+#[elrond_wasm_derive::contract(CryptoBubblesImpl)]
 pub trait CryptoBubbles
 {
     /// constructor function
@@ -35,17 +35,16 @@ pub trait CryptoBubbles
     }
 
     /// player adds funds
-    #[payable]
-    fn topUp(&self) {
+    #[payable(payment)]
+    fn topUp(&self, payment: BigInt) {
         let caller = self.get_caller();
-        let call_value = self.get_call_value_big_int();
         
         let balance_key = self._player_balance_key(&caller);
         let mut balance = self.storage_load_big_int(&balance_key);
-        balance += &call_value;
+        balance += &payment;
         self.storage_store_big_int(&balance_key, &balance);
 
-        self.top_up_event(&caller, &call_value);
+        self.top_up_event(&caller, &payment);
     }
 
     /// player withdraws funds
@@ -93,7 +92,7 @@ pub trait CryptoBubbles
         let player = self.get_caller();
         let bet = self.get_call_value_big_int();
 
-        self.topUp();
+        self.topUp(self.get_call_value_big_int());
         self._addPlayerToGameStateChange(&game_index, &player, &bet)
     }
 

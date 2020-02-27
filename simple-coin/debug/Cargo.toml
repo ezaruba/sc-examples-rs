@@ -1,13 +1,13 @@
 [package]
 name = "simple-coin-debug"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["andrei-marinica <andrei_m_marinica@yahoo.com>"]
 edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-elrond-wasm = "0.1.0"
-elrond-wasm-debug = "0.1.0"
+elrond-wasm = "0.1.1"
+elrond-wasm-debug = "0.1.1"
 
 simple-coin = { path = ".." }
