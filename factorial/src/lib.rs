@@ -4,7 +4,7 @@
 #![allow(non_snake_case)]
 #![allow(unused_attributes)]
 
-#[elrond_wasm_derive::contract]
+#[elrond_wasm_derive::contract(FactorialImpl)]
 pub trait Factorial {
 
     fn init(&self) {

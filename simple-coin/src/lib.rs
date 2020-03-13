@@ -6,8 +6,8 @@
 
 static TOTAL_SUPPLY_KEY: [u8; 32] = [0u8; 32];
 
-#[elrond_wasm_derive::contract]
-pub trait SimpleCoinElrond {
+#[elrond_wasm_derive::contract(SimpleCoinImpl)]
+pub trait SimpleCoin {
     /// constructor function
     /// is called immediately after the contract is created
     /// will set the fixed global token supply and give all the supply to the creator
