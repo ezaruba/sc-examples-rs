@@ -21,7 +21,7 @@ fn main() {
 
     // tx 1: init
     let tx1 = TxData::new_create(
-        Box::new(ApiFeatureExamplesInst::new(mock_ref.clone())), 
+        Box::new(ApiFeatureExamplesImpl::new(mock_ref.clone())), 
         ADDR1.into(), 
         ADDR2.into());
     let result1 = mock_ref.execute_tx(tx1);
