@@ -18,20 +18,20 @@ pub trait Bob {
     }
 
     #[payable(payment)]
-    fn payMe(&self, payment: BigInt, arg1: i64) {
-        self.storage_store_big_int(&LAST_PAY_KEY.into(), &payment);
+    fn payMe(&self, payment: BigUint, arg1: i64) {
+        self.storage_store_big_uint(&LAST_PAY_KEY.into(), &payment);
         self.storage_store_i64(&STORAGE_KEY_1.into(), arg1);
     }
 
     #[payable(payment)]
-    fn payMeWithResult(&self, payment: BigInt, arg1: i64) -> i64 {
+    fn payMeWithResult(&self, payment: BigUint, arg1: i64) -> i64 {
         self.payMe(payment, arg1);
         0x7777
     }
 
-    fn messageMe(&self, arg1: i64, arg2: &BigInt, arg3: &Vec<u8>, arg4: Address) {
+    fn messageMe(&self, arg1: i64, arg2: &BigUint, arg3: &Vec<u8>, arg4: Address) {
         self.storage_store_i64(&STORAGE_KEY_2.into(), arg1);
-        self.storage_store_big_int(&STORAGE_KEY_3.into(), arg2);
+        self.storage_store_big_uint(&STORAGE_KEY_3.into(), arg2);
         self.storage_store(&STORAGE_KEY_4.into(), arg3);
         self.storage_store_bytes32(&STORAGE_KEY_5.into(), &arg4.into());
     }

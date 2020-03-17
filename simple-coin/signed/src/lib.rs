@@ -11,20 +11,20 @@ pub trait SimpleCoin {
     /// constructor function
     /// is called immediately after the contract is created
     /// will set the fixed global token supply and give all the supply to the creator
-    fn init(&self, total_supply: &BigUint) {
+    fn init(&self, total_supply: &BigInt) {
         let sender = self.get_caller();
 
         // save total supply
-        self.storage_store_big_uint(&TOTAL_SUPPLY_KEY.into(), &total_supply);
+        self.storage_store_big_int(&TOTAL_SUPPLY_KEY.into(), &total_supply);
 
         // sender balance <- total supply
         let balance_key = self._balance_key(&sender);
-        self.storage_store_big_uint(&balance_key, &total_supply);
+        self.storage_store_big_int(&balance_key, &total_supply);
     }
 
     /// getter function: retrieves total token supply
-    fn totalSupply(&self) -> BigUint {
-        let total_supply = self.storage_load_big_uint(&TOTAL_SUPPLY_KEY.into());
+    fn totalSupply(&self) -> BigInt {
+        let total_supply = self.storage_load_big_int(&TOTAL_SUPPLY_KEY.into());
         total_supply
     }
 
@@ -50,30 +50,30 @@ pub trait SimpleCoin {
     }
 
     /// getter function: retrieves balance for an account
-    fn balanceOf(&self, subject: Address) -> BigUint {
+    fn balanceOf(&self, subject: Address) -> BigInt {
         // load balance
         let balance_key = self._balance_key(&subject);
-        let balance = self.storage_load_big_uint(&balance_key);
+        let balance = self.storage_load_big_int(&balance_key);
 
         // return balance as big int
         balance
     }
 
     /// getter function: retrieves allowance granted from one account to another
-    fn allowance(&self, sender: Address, recipient: Address) -> BigUint {
+    fn allowance(&self, sender: Address, recipient: Address) -> BigInt {
         // get allowance
         let allowance_key = self._allowance_key(&sender, &recipient);
-        let res = self.storage_load_big_uint(&allowance_key);
+        let res = self.storage_load_big_int(&allowance_key);
 
         // return allowance as big int
         res
     }
 
     #[private]
-    fn _perform_transfer(&self, sender: Address, recipient: Address, amount: BigUint) -> Result<(), &str> {
+    fn _perform_transfer(&self, sender: Address, recipient: Address, amount: BigInt) -> Result<(), &str> {
         // load sender balance
         let sender_balance_key = self._balance_key(&sender);
-        let mut sender_balance = self.storage_load_big_uint(&sender_balance_key);
+        let mut sender_balance = self.storage_load_big_int(&sender_balance_key);
     
         // check if enough funds
         if &amount > &sender_balance {
@@ -82,13 +82,13 @@ pub trait SimpleCoin {
     
         // update sender balance
         sender_balance -= &amount;
-        self.storage_store_big_uint(&sender_balance_key, &sender_balance);
+        self.storage_store_big_int(&sender_balance_key, &sender_balance);
     
         // load & update receiver balance
         let rec_balance_key = self._balance_key(&recipient);
-        let mut rec_balance = self.storage_load_big_uint(&rec_balance_key);
+        let mut rec_balance = self.storage_load_big_int(&rec_balance_key);
         rec_balance += &amount;
-        self.storage_store_big_uint(&rec_balance_key, &rec_balance);
+        self.storage_store_big_int(&rec_balance_key, &rec_balance);
     
         // log operation
         self.transfer_event(&sender, &recipient, &amount);
@@ -97,22 +97,30 @@ pub trait SimpleCoin {
     }
 
     /// transfers tokens from sender to another account
-    fn transferToken(&self, recipient: Address, amount: BigUint) -> Result<(), &str> {
+    fn transferToken(&self, recipient: Address, amount: BigInt) -> Result<(), &str> {
         // sender is the caller
         let sender = self.get_caller();
 
+        if &amount < &BigInt::from(0) {
+            return Err("transfer amount cannot be negative");
+        }
+        
         self._perform_transfer(sender, recipient, amount)
     }
 
     /// sender allows beneficiary to use given amount of tokens from sender's balance
     /// it will completely overwrite any previously existing allowance from sender to beneficiary
-    fn approve(&self, recipient: Address, amount: BigUint) -> Result<(), &str> {
+    fn approve(&self, recipient: Address, amount: BigInt) -> Result<(), &str> {
         // sender is the caller
         let sender = self.get_caller();
+
+        if &amount < &BigInt::from(0) {
+            return Err("approve amount cannot be negative");
+        }
       
         // store allowance
         let allowance_key = self._allowance_key(&sender, &recipient);
-        self.storage_store_big_uint(&allowance_key, &amount);
+        self.storage_store_big_int(&allowance_key, &amount);
       
         // log operation
         self.approve_event(&sender, &recipient, &amount);
@@ -120,13 +128,17 @@ pub trait SimpleCoin {
     }
  
     /// caller uses allowance to transfer funds between 2 other accounts
-    fn transferFrom(&self, sender: Address, recipient: Address, amount: BigUint) -> Result<(), &str> {
+    fn transferFrom(&self, sender: Address, recipient: Address, amount: BigInt) -> Result<(), &str> {
         // get caller
         let caller = self.get_caller();
 
+        if &amount < &BigInt::from(0) {
+            return Err("transfer amount cannot be negative");
+        }
+
         // load allowance
         let allowance_key = self._allowance_key(&sender, &caller);
-        let mut allowance = self.storage_load_big_uint(&allowance_key);
+        let mut allowance = self.storage_load_big_int(&allowance_key);
 
         // amount should not exceed allowance
         if &amount > &allowance {
@@ -135,14 +147,14 @@ pub trait SimpleCoin {
 
         // update allowance
         allowance -= &amount;
-        self.storage_store_big_uint(&allowance_key, &allowance);
+        self.storage_store_big_int(&allowance_key, &allowance);
 
         self._perform_transfer(sender, recipient, amount)
     }
 
     #[event("0x7134692b230b9e1ffa39098904722134159652b09c5bc41d88d6698779d228ff")]
-    fn approve_event(&self, sender: &Address, recipient: &Address, amount: &BigUint);
+    fn approve_event(&self, sender: &Address, recipient: &Address, amount: &BigInt);
 
     #[event("0xf099cd8bde557814842a3121e8ddfd433a539b8c9f14bf31ebf108d12e6196e9")]
-    fn transfer_event(&self, sender: &Address, recipient: &Address, amount: &BigUint);
+    fn transfer_event(&self, sender: &Address, recipient: &Address, amount: &BigInt);
 }
