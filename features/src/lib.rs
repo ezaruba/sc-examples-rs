@@ -79,6 +79,52 @@ pub trait ApiFeatureExamples {
         (value, l)
     }
 
+    
+    // arithmetic ooperators: + - * / %
+    fn add_big_int(&self, a: BigInt, b: BigInt) -> BigInt           { a + b }
+    fn add_big_int_ref(&self, a: &BigInt, b: &BigInt) -> BigInt     { a + b }
+    fn add_big_uint(&self, a: BigUint, b: BigUint) -> BigUint       { a + b }
+    fn add_big_uint_ref(&self, a: &BigUint, b: &BigUint) -> BigUint { a + b }
+    fn sub_big_int(&self, a: BigInt, b: BigInt) -> BigInt           { a - b }
+    fn sub_big_int_ref(&self, a: &BigInt, b: &BigInt) -> BigInt     { a - b }
+    fn sub_big_uint(&self, a: BigUint, b: BigUint) -> BigUint       { a - b }
+    fn sub_big_uint_ref(&self, a: &BigUint, b: &BigUint) -> BigUint { a - b }
+    fn mul_big_int(&self, a: BigInt, b: BigInt) -> BigInt           { a * b }
+    fn mul_big_int_ref(&self, a: &BigInt, b: &BigInt) -> BigInt     { a * b }
+    fn mul_big_uint(&self, a: BigUint, b: BigUint) -> BigUint       { a * b }
+    fn mul_big_uint_ref(&self, a: &BigUint, b: &BigUint) -> BigUint { a * b }
+    fn div_big_int(&self, a: BigInt, b: BigInt) -> BigInt           { a / b }
+    fn div_big_int_ref(&self, a: &BigInt, b: &BigInt) -> BigInt     { a / b }
+    fn div_big_uint(&self, a: BigUint, b: BigUint) -> BigUint       { a / b }
+    fn div_big_uint_ref(&self, a: &BigUint, b: &BigUint) -> BigUint { a / b }
+    fn rem_big_int(&self, a: BigInt, b: BigInt) -> BigInt           { a % b }
+    fn rem_big_int_ref(&self, a: &BigInt, b: &BigInt) -> BigInt     { a % b }
+    fn rem_big_uint(&self, a: BigUint, b: BigUint) -> BigUint       { a % b }
+    fn rem_big_uint_ref(&self, a: &BigUint, b: &BigUint) -> BigUint { a % b }
+
+    // assign version of all operators above
+    fn add_assign_big_int(&self, a: BigInt, b: BigInt) -> BigInt           { let mut r = a.clone(); r += b; r }
+    fn add_assign_big_int_ref(&self, a: &BigInt, b: &BigInt) -> BigInt     { let mut r = a.clone(); r += b; r }
+    fn add_assign_big_uint(&self, a: BigUint, b: BigUint) -> BigUint       { let mut r = a.clone(); r += b; r }
+    fn add_assign_big_uint_ref(&self, a: &BigUint, b: &BigUint) -> BigUint { let mut r = a.clone(); r += b; r }
+    fn sub_assign_big_int(&self, a: BigInt, b: BigInt) -> BigInt           { let mut r = a.clone(); r -= b; r }
+    fn sub_assign_big_int_ref(&self, a: &BigInt, b: &BigInt) -> BigInt     { let mut r = a.clone(); r -= b; r }
+    fn sub_assign_big_uint(&self, a: BigUint, b: BigUint) -> BigUint       { let mut r = a.clone(); r -= b; r }
+    fn sub_assign_big_uint_ref(&self, a: &BigUint, b: &BigUint) -> BigUint { let mut r = a.clone(); r -= b; r }
+    fn mul_assign_big_int(&self, a: BigInt, b: BigInt) -> BigInt           { let mut r = a.clone(); r *= b; r }
+    fn mul_assign_big_int_ref(&self, a: &BigInt, b: &BigInt) -> BigInt     { let mut r = a.clone(); r *= b; r }
+    fn mul_assign_big_uint(&self, a: BigUint, b: BigUint) -> BigUint       { let mut r = a.clone(); r *= b; r }
+    fn mul_assign_big_uint_ref(&self, a: &BigUint, b: &BigUint) -> BigUint { let mut r = a.clone(); r *= b; r }
+    fn div_assign_big_int(&self, a: BigInt, b: BigInt) -> BigInt           { let mut r = a.clone(); r /= b; r }
+    fn div_assign_big_int_ref(&self, a: &BigInt, b: &BigInt) -> BigInt     { let mut r = a.clone(); r /= b; r }
+    fn div_assign_big_uint(&self, a: BigUint, b: BigUint) -> BigUint       { let mut r = a.clone(); r /= b; r }
+    fn div_assign_big_uint_ref(&self, a: &BigUint, b: &BigUint) -> BigUint { let mut r = a.clone(); r /= b; r }
+    fn rem_assign_big_int(&self, a: BigInt, b: BigInt) -> BigInt           { let mut r = a.clone(); r %= b; r }
+    fn rem_assign_big_int_ref(&self, a: &BigInt, b: &BigInt) -> BigInt     { let mut r = a.clone(); r %= b; r }
+    fn rem_assign_big_uint(&self, a: BigUint, b: BigUint) -> BigUint       { let mut r = a.clone(); r %= b; r }
+    fn rem_assign_big_uint_ref(&self, a: &BigUint, b: &BigUint) -> BigUint { let mut r = a.clone(); r %= b; r }
+
+
     fn computeSha256(&self, input: Vec<u8>) -> Vec<u8> {
         self.sha256(&input).as_ref().into()
     }
