@@ -57,7 +57,6 @@ pub trait ApiFeatureExamples {
     }
 
     fn echo_vec_u8(&self, arg: Vec<u8>) -> (Vec<u8>, i64) {
-        self.storage_store(&ZERO_KEY.into(), &arg);
         let l = arg.len() as i64;
         (arg, l)
     }
@@ -79,7 +78,20 @@ pub trait ApiFeatureExamples {
         (value, l)
     }
 
-    
+    fn logEventA(&self, data: &BigUint) {
+        self.event_a(data);
+    }
+
+    fn logEventB(&self, arg1: &BigUint, arg2: &Address, data: &BigUint) {
+        self.event_b(arg1, arg2, data);
+    }
+
+    #[event("0x0123456789abcdef0123456789abcdef0123456789abcdef000000000000000a")]
+    fn event_a(&self, data: &BigUint);
+
+    #[event("0x0123456789abcdef0123456789abcdef0123456789abcdef000000000000000b")]
+    fn event_b(&self, arg1: &BigUint, arg2: &Address, data: &BigUint);
+
     // arithmetic ooperators: + - * / %
     fn add_big_int(&self, a: BigInt, b: BigInt) -> BigInt           { a + b }
     fn add_big_int_ref(&self, a: &BigInt, b: &BigInt) -> BigInt     { a + b }
@@ -124,6 +136,28 @@ pub trait ApiFeatureExamples {
     fn rem_assign_big_uint(&self, a: BigUint, b: BigUint) -> BigUint       { let mut r = a.clone(); r %= b; r }
     fn rem_assign_big_uint_ref(&self, a: &BigUint, b: &BigUint) -> BigUint { let mut r = a.clone(); r %= b; r }
 
+    fn bit_and_big_uint(&self, a: BigUint, b: BigUint) -> BigUint       { a & b }
+    fn bit_and_big_uint_ref(&self, a: &BigUint, b: &BigUint) -> BigUint { a & b }
+    fn bit_or_big_uint(&self, a: BigUint, b: BigUint) -> BigUint        { a | b }
+    fn bit_or_big_uint_ref(&self, a: &BigUint, b: &BigUint) -> BigUint  { a | b }
+    fn bit_xor_big_uint(&self, a: BigUint, b: BigUint) -> BigUint       { a ^ b }
+    fn bit_xor_big_uint_ref(&self, a: &BigUint, b: &BigUint) -> BigUint { a ^ b }
+
+    fn bit_and_assign_big_uint(&self, a: BigUint, b: BigUint) -> BigUint       { let mut r = a.clone(); r &= b; r }
+    fn bit_and_assign_big_uint_ref(&self, a: &BigUint, b: &BigUint) -> BigUint { let mut r = a.clone(); r &= b; r }
+    fn bit_or_assign_big_uint(&self, a: BigUint, b: BigUint) -> BigUint        { let mut r = a.clone(); r |= b; r }
+    fn bit_or_assign_big_uint_ref(&self, a: &BigUint, b: &BigUint) -> BigUint  { let mut r = a.clone(); r |= b; r }
+    fn bit_xor_assign_big_uint(&self, a: BigUint, b: BigUint) -> BigUint       { let mut r = a.clone(); r ^= b; r }
+    fn bit_xor_assign_big_uint_ref(&self, a: &BigUint, b: &BigUint) -> BigUint { let mut r = a.clone(); r ^= b; r }
+
+    fn shr_big_uint(&self, a: BigUint, b: i64) -> BigUint      { a >> (b as i32) }
+    fn shr_big_uint_ref(&self, a: &BigUint, b: i64) -> BigUint { a >> (b as i32) }
+    fn shl_big_uint(&self, a: BigUint, b: i64) -> BigUint      { a << (b as i32) }
+    fn shl_big_uint_ref(&self, a: &BigUint, b: i64) -> BigUint { a << (b as i32) }
+
+    fn shr_assign_big_uint_ref(&self, a: BigUint, b: i64) -> BigUint { let mut r = a.clone(); r >>= b as i32; r }
+    fn shl_assign_big_uint_ref(&self, a: BigUint, b: i64) -> BigUint { let mut r = a.clone(); r <<= b as i32; r }
+    
 
     fn computeSha256(&self, input: Vec<u8>) -> Vec<u8> {
         self.sha256(&input).as_ref().into()
