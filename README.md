@@ -15,15 +15,15 @@ To build all the examples, simply run:
 
 # Advanced
 
-To build individual wasm projects:
+To build individual wasm projects (replace <contract-name> with the contract directory name):
 ```
-cargo build --bin wasm --target=wasm32-unknown-unknown --release
+cargo build --bin <contract-name> --target=wasm32-unknown-unknown --release
 ```
 
 To debug macros:
 - wasm mode:
 ```
-cargo +nightly rustc --bin wasm -- -Z unstable-options --pretty=expanded > demacroed.rs
+cargo +nightly rustc --bin <contract-name> -- -Z unstable-options --pretty=expanded > demacroed.rs
 ```
 
 - debug mode:
