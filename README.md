@@ -8,12 +8,17 @@ The Rust framework is not yet published, so we are using the unpublished version
 
 # Build
 
-To build any of the Rust projects:
+To build all the examples, simply run:
 ```
-cargo build --bin wasm --target=wasm32-unknown-unknown --release
+./compile-wasm.sh 
 ```
 
 # Advanced
+
+To build individual wasm projects:
+```
+cargo build --bin wasm --target=wasm32-unknown-unknown --release
+```
 
 To debug macros:
 - wasm mode:

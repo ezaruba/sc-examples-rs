@@ -35,8 +35,8 @@ pub trait CryptoBubbles
     }
 
     /// player adds funds
-    #[payable(payment)]
-    fn topUp(&self, payment: BigUint) {
+    #[payable]
+    fn topUp(&self, #[payment] payment: BigUint) {
         let caller = self.get_caller();
         
         let balance_key = self._player_balance_key(&caller);

@@ -11,12 +11,12 @@ static SOME_ADDRESS: [u8; 32] = [0xfeu8; 32];
 #[elrond_wasm_derive::callable(PayMeProxy)]
 pub trait PayMe {
 
-    #[payable(_payment)]
-    fn payMe(&self, _payment: BigUint, _arg1: i64);
+    #[payable]
+    fn payMe(&self, #[payment] _payment: BigUint, _arg1: i64);
 
-    #[payable(_payment)]
+    #[payable]
     #[callback(payCallback)]
-    fn payMeWithResult(&self, _payment: BigUint, _arg1: i64);
+    fn payMeWithResult(&self, #[payment] _payment: BigUint, _arg1: i64);
 }
 
 #[elrond_wasm_derive::callable(MessageMeProxy)]
@@ -37,16 +37,16 @@ pub trait Alice {
         self.storage_store_bytes32(&CALEE_STORAGE_KEY.into(), &calee_address.into());
     }
 
-    #[payable(payment)]
-    fn forwardToOtherContract(&self, payment: BigUint) {
+    #[payable]
+    fn forwardToOtherContract(&self, #[payment] payment: BigUint) {
         let calee_address: Address = self.storage_load_bytes32(&CALEE_STORAGE_KEY.into()).into();
 
         let target_contract = contract_proxy!(self, &calee_address, PayMe);
         target_contract.payMe(payment, 0x56);
     }
 
-    #[payable(payment)]
-    fn forwardToOtherContractWithCallback(&self, payment: BigUint) {
+    #[payable]
+    fn forwardToOtherContractWithCallback(&self, #[payment] payment: BigUint) {
         let calee_address: Address = self.storage_load_bytes32(&CALEE_STORAGE_KEY.into()).into();
 
         let target_contract = contract_proxy!(self, &calee_address, PayMe);

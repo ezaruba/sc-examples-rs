@@ -17,14 +17,14 @@ pub trait Bob {
     fn init(&self) {
     }
 
-    #[payable(payment)]
-    fn payMe(&self, payment: BigUint, arg1: i64) {
+    #[payable]
+    fn payMe(&self, #[payment] payment: BigUint, arg1: i64) {
         self.storage_store_big_uint(&LAST_PAY_KEY.into(), &payment);
         self.storage_store_i64(&STORAGE_KEY_1.into(), arg1);
     }
 
-    #[payable(payment)]
-    fn payMeWithResult(&self, payment: BigUint, arg1: i64) -> i64 {
+    #[payable]
+    fn payMeWithResult(&self, #[payment] payment: BigUint, arg1: i64) -> i64 {
         self.payMe(payment, arg1);
         0x7777
     }
