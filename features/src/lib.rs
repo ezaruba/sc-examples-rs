@@ -43,6 +43,18 @@ pub trait ApiFeatureExamples {
     fn echo_usize(&self, i: usize) -> usize {
         i
     }
+    
+    fn echo_i8(&self, i: i8) -> i8 {
+        i
+    }
+
+    fn echo_u8(&self, i: u8) -> u8 {
+        i
+    }
+
+    fn echo_bool(&self, i: bool) -> bool {
+        i
+    }
 
     fn echo_vec_u8(&self, arg: Vec<u8>) -> (Vec<u8>, i64) {
         let l = arg.len() as i64;
