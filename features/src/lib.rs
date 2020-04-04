@@ -20,40 +20,28 @@ pub trait ApiFeatureExamples {
         bi
     }
 
-    fn store_big_uint(&self, bi: BigUint) {
-        self.storage_store_big_uint(&ZERO_KEY.into(), &bi);
-    }
-
-    fn load_big_uint(&self) -> BigUint {
-        self.storage_load_big_uint(&ZERO_KEY.into())
-    }
-
     fn echo_big_int(&self, bi: BigInt) -> BigInt {
         bi
-    }
-
-    fn store_big_int(&self, bi: BigInt) {
-        self.storage_store_big_int(&ZERO_KEY.into(), &bi);
-    }
-
-    fn load_big_int(&self) -> BigInt {
-        self.storage_load_big_int(&ZERO_KEY.into())
     }
 
     fn echo_i64(&self, i: i64) -> i64 {
         i
     }
 
-    fn store_i64(&self, i: i64) {
-        self.storage_store_i64(&ZERO_KEY.into(), i);
+    fn echo_i32(&self, i: i32) -> i32 {
+        i
     }
 
-    fn load_i64(&self) -> (bool, i64) {
-        let o = self.storage_load_i64(&ZERO_KEY.into());
-        match o {
-            Some(i) => (true, i),
-            None => (false, 0)
-        }
+    fn echo_u32(&self, i: u32) -> u32 {
+        i
+    }
+
+    fn echo_isize(&self, i: isize) -> isize {
+        i
+    }
+
+    fn echo_usize(&self, i: usize) -> usize {
+        i
     }
 
     fn echo_vec_u8(&self, arg: Vec<u8>) -> (Vec<u8>, i64) {
@@ -61,8 +49,34 @@ pub trait ApiFeatureExamples {
         (arg, l)
     }
 
+    fn store_big_uint(&self, bi: BigUint) {
+        self.storage_store_big_uint(&ZERO_KEY.into(), &bi);
+    }
+
+    fn store_big_int(&self, bi: BigInt) {
+        self.storage_store_big_int(&ZERO_KEY.into(), &bi);
+    }
+
+    fn store_i64(&self, i: i64) {
+        self.storage_store_i64(&ZERO_KEY.into(), i);
+    }
+
     fn store_vec_u8(&self, arg: Vec<u8>) {
         self.storage_store(&ZERO_KEY.into(), &arg)
+    }
+
+    
+
+    fn load_big_uint(&self) -> BigUint {
+        self.storage_load_big_uint(&ZERO_KEY.into())
+    }
+
+    fn load_big_int(&self) -> BigInt {
+        self.storage_load_big_int(&ZERO_KEY.into())
+    }
+
+    fn load_i64(&self) -> Option<i64> {
+        self.storage_load_i64(&ZERO_KEY.into())
     }
 
     fn load_vec_u8(&self) -> (Vec<u8>, i64) {
