@@ -56,6 +56,10 @@ pub trait ApiFeatureExamples {
         i
     }
 
+    fn echo_array_u8(&self, s: [u8; 5]) -> [u8; 5] {
+        s
+    }
+
     fn echo_vec_u8(&self, arg: Vec<u8>) -> (Vec<u8>, i64) {
         let l = arg.len() as i64;
         (arg, l)
