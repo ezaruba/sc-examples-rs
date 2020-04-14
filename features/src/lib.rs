@@ -65,6 +65,18 @@ pub trait ApiFeatureExamples {
         (arg, l)
     }
 
+    fn echo_multi_i32(&self, _n: usize, #[multi(_n)] m: Vec<i32>) -> Vec<i32> {
+        m
+    }
+
+    fn echo_multi_vec_u8(&self, _n: usize, #[multi(_n)] m: Vec<Vec<u8>>) -> Vec<Vec<u8>> {
+        m
+    }
+
+    fn echo_multi_h256(&self, _n: usize, #[multi(_n)] m: Vec<H256>) -> Vec<H256> {
+        m
+    }
+
     fn store_big_uint(&self, bi: BigUint) {
         self.storage_store_big_uint(&ZERO_KEY.into(), &bi);
     }
@@ -180,13 +192,15 @@ pub trait ApiFeatureExamples {
     fn bit_xor_assign_big_uint(&self, a: BigUint, b: BigUint) -> BigUint       { let mut r = a.clone(); r ^= b; r }
     fn bit_xor_assign_big_uint_ref(&self, a: &BigUint, b: &BigUint) -> BigUint { let mut r = a.clone(); r ^= b; r }
 
-    fn shr_big_uint(&self, a: BigUint, b: i64) -> BigUint      { a >> (b as i32) }
-    fn shr_big_uint_ref(&self, a: &BigUint, b: i64) -> BigUint { a >> (b as i32) }
-    fn shl_big_uint(&self, a: BigUint, b: i64) -> BigUint      { a << (b as i32) }
-    fn shl_big_uint_ref(&self, a: &BigUint, b: i64) -> BigUint { a << (b as i32) }
+    fn shr_big_uint(&self, a: BigUint, b: usize) -> BigUint      { a >> b }
+    fn shr_big_uint_ref(&self, a: &BigUint, b: usize) -> BigUint { a >> b }
+    fn shl_big_uint(&self, a: BigUint, b: usize) -> BigUint      { a << b }
+    fn shl_big_uint_ref(&self, a: &BigUint, b: usize) -> BigUint { a << b }
 
-    fn shr_assign_big_uint_ref(&self, a: BigUint, b: i64) -> BigUint { let mut r = a.clone(); r >>= b as i32; r }
-    fn shl_assign_big_uint_ref(&self, a: BigUint, b: i64) -> BigUint { let mut r = a.clone(); r <<= b as i32; r }
+    fn shr_assign_big_uint(&self, a: BigUint, b: usize) -> BigUint      { let mut r = a.clone(); r >>= b; r }
+    fn shr_assign_big_uint_ref(&self, a: &BigUint, b: usize) -> BigUint { let mut r = a.clone(); r >>= b; r }
+    fn shl_assign_big_uint(&self, a: BigUint, b: usize) -> BigUint      { let mut r = a.clone(); r <<= b; r }
+    fn shl_assign_big_uint_ref(&self, a: &BigUint, b: usize) -> BigUint { let mut r = a.clone(); r <<= b; r }
     
 
     fn computeSha256(&self, input: Vec<u8>) -> Vec<u8> {
