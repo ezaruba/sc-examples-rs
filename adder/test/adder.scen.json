@@ -18,7 +18,7 @@
             "tx": {
                 "from": "0xacc1000000000000000000000000000000000000000000000000000000001234",
                 "value": "0",
-                "contractCode": "file:adder.wasm",
+                "contractCode": "file:../output/adder.wasm",
                 "arguments": [
                     "0x05"
                 ],
@@ -90,7 +90,7 @@
                     "storage": {
                         "0x0000000000000000000000000000000000000000000000000000000000000000": "0x08"
                     },
-                    "code": "file:adder.wasm"
+                    "code": "file:../output/adder.wasm"
                 }
             }
         }
