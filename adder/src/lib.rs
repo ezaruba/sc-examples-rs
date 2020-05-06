@@ -4,23 +4,23 @@
 #![allow(non_snake_case)]
 #![allow(unused_attributes)]
 
-static A_KEY: [u8; 32] = [0u8; 32];
-
 #[elrond_wasm_derive::contract(AdderImpl)]
 pub trait Adder {
 
+    #[storage_get("sum")]
+    fn getSum(&self) -> BigInt;
+
+    #[private]
+    #[storage_set("sum")]
+    fn _set_sum(&self, sum: &BigInt);
+
     fn init(&self, initial_value: &BigInt) {
-        self.storage_store_big_int(&A_KEY.into(), &initial_value);
+        self._set_sum(&initial_value);
     }
 
     fn add(&self, value: &BigInt) {
-        let mut current = self.storage_load_big_int(&A_KEY.into());
-        current += value;
-        self.storage_store_big_int(&A_KEY.into(), &current);
-    }
-
-    fn getSum(&self) -> BigInt {
-        let current = self.storage_load_big_int(&A_KEY.into());
-        current
+        let mut sum = self.getSum();
+        sum += value;
+        self._set_sum(&sum);
     }
 }
