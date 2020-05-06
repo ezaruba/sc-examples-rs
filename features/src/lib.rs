@@ -4,7 +4,9 @@
 #![allow(non_snake_case)]
 #![allow(unused_attributes)]
 
-static ZERO_KEY: [u8; 32] = [0u8; 32];
+use serde::{Serialize, Deserialize}
+
+// static ZERO_KEY: [u8; 32] = [0u8; 32];
 
 #[elrond_wasm_derive::contract(ApiFeatureExamplesImpl)]
 pub trait ApiFeatureExamples {
@@ -15,6 +17,8 @@ pub trait ApiFeatureExamples {
     fn panicWithMessage(&self) {
         panic!("example panic message");
     }
+
+    // TEST ARGUMENT AND RETURN TYPE SERIALIZATION
 
     fn echo_big_uint(&self, bi: BigUint) -> BigUint {
         bi
@@ -77,48 +81,67 @@ pub trait ApiFeatureExamples {
         m
     }
 
-    fn store_big_uint(&self, bi: BigUint) {
-        self.storage_store_big_uint(&ZERO_KEY.into(), &bi);
+    // STORAGE STORE
+
+    #[storage_set("big_uint")]
+    fn store_big_uint(&self, bi: BigUint);
+
+    #[storage_set("big_int")]
+    fn store_big_int(&self, bi: BigInt);
+
+    #[storage_set("i64")]
+    fn store_i64(&self, i: i64);
+
+    #[storage_set("vec_u8")]
+    fn store_vec_u8(&self, arg: Vec<u8>);
+
+    #[storage_set("opt_addr")]
+    fn store_opt_addr(&self, opt_addr: Option<Address>);
+
+    #[storage_set("map1")]
+    fn store_map1(&self, addr: Address, bi: BigUint);
+
+    #[storage_set("map2")]
+    fn store_map2(&self, addr1: &Address, addr2: &Address, bi: &BigUint);
+
+    #[storage_set("map3")]
+    fn store_map3(&self, x: usize, b: bool);
+
+    // STORAGE LOAD
+
+    #[storage_get("big_uint")]
+    fn load_big_uint(&self) -> BigUint;
+
+    #[storage_get("big_int")]
+    fn load_big_int(&self) -> BigInt;
+
+    #[storage_get("i64")]
+    fn load_i64(&self) -> i64;
+
+    #[storage_get("vec_u8")]
+    fn load_vec_u8(&self) -> Vec<u8>;
+
+    #[storage_get("opt_addr")]
+    fn load_opt_addr(&self) -> Option<Address>;
+
+    #[storage_get("map1")]
+    fn load_map1(&self, addr: Address) -> BigUint;
+
+    #[storage_get("map2")]
+    fn load_map2(&self, addr1: &Address, addr2: &Address) -> BigUint;
+
+    #[storage_get("map3")]
+    fn load_map3(&self, x: usize) -> bool;
+
+    // OBJECT SERIALIZATION
+
+    #[derive(Serialize, Deserialize)]
+    pub struct Toy {
+        q1: u8,
+        q2: i32
     }
 
-    fn store_big_int(&self, bi: BigInt) {
-        self.storage_store_big_int(&ZERO_KEY.into(), &bi);
-    }
-
-    fn store_i64(&self, i: i64) {
-        self.storage_store_i64(&ZERO_KEY.into(), i);
-    }
-
-    fn store_vec_u8(&self, arg: Vec<u8>) {
-        self.storage_store(&ZERO_KEY.into(), &arg)
-    }
-
-    
-
-    fn load_big_uint(&self) -> BigUint {
-        self.storage_load_big_uint(&ZERO_KEY.into())
-    }
-
-    fn load_big_int(&self) -> BigInt {
-        self.storage_load_big_int(&ZERO_KEY.into())
-    }
-
-    fn load_i64(&self) -> Option<i64> {
-        self.storage_load_i64(&ZERO_KEY.into())
-    }
-
-    fn load_vec_u8(&self) -> (Vec<u8>, i64) {
-        let v = self.storage_load(&ZERO_KEY.into());
-        let l = v.len() as i64;
-        (v, l)
-    }
-
-    fn storageLoadVec(&self) -> (Vec<u8>, i64) {
-        let key: StorageKey = [0x01u8; 32].into();
-        let value = self.storage_load(&key);
-        let l = value.len() as i64;
-        (value, l)
-    }
+    // EVENTS
 
     fn logEventA(&self, data: &BigUint) {
         self.event_a(data);
@@ -133,6 +156,8 @@ pub trait ApiFeatureExamples {
 
     #[event("0x0123456789abcdef0123456789abcdef0123456789abcdef000000000000000b")]
     fn event_b(&self, arg1: &BigUint, arg2: &Address, data: &BigUint);
+
+    // BIG INT OPERATIONS
 
     // arithmetic ooperators: + - * / %
     fn add_big_int(&self, a: BigInt, b: BigInt) -> BigInt           { a + b }
@@ -201,7 +226,8 @@ pub trait ApiFeatureExamples {
     fn shr_assign_big_uint_ref(&self, a: &BigUint, b: usize) -> BigUint { let mut r = a.clone(); r >>= b; r }
     fn shl_assign_big_uint(&self, a: BigUint, b: usize) -> BigUint      { let mut r = a.clone(); r <<= b; r }
     fn shl_assign_big_uint_ref(&self, a: &BigUint, b: usize) -> BigUint { let mut r = a.clone(); r <<= b; r }
-    
+
+    // CRYPTO FUNCTIONS
 
     fn computeSha256(&self, input: Vec<u8>) -> Vec<u8> {
         self.sha256(&input).as_ref().into()
