@@ -4,7 +4,7 @@
 #![allow(non_snake_case)]
 #![allow(unused_attributes)]
 
-static TOTAL_SUPPLY_KEY: [u8; 32] = [0u8; 32];
+static TOTAL_SUPPLY_KEY: &[u8] = &[0u8; 32];
 
 #[elrond_wasm_derive::contract(SimpleCoinImpl)]
 pub trait SimpleCoin {
@@ -15,16 +15,16 @@ pub trait SimpleCoin {
         let sender = self.get_caller();
 
         // save total supply
-        self.storage_store_big_uint(&TOTAL_SUPPLY_KEY.into(), &total_supply);
+        self.storage_store_big_uint(TOTAL_SUPPLY_KEY, &total_supply);
 
         // sender balance <- total supply
         let balance_key = self._balance_key(&sender);
-        self.storage_store_big_uint(&balance_key, &total_supply);
+        self.storage_store_big_uint(balance_key.as_bytes(), &total_supply);
     }
 
     /// getter function: retrieves total token supply
     fn totalSupply(&self) -> BigUint {
-        let total_supply = self.storage_load_big_uint(&TOTAL_SUPPLY_KEY.into());
+        let total_supply = self.storage_load_big_uint(TOTAL_SUPPLY_KEY);
         total_supply
     }
 
@@ -53,7 +53,7 @@ pub trait SimpleCoin {
     fn balanceOf(&self, subject: Address) -> BigUint {
         // load balance
         let balance_key = self._balance_key(&subject);
-        let balance = self.storage_load_big_uint(&balance_key);
+        let balance = self.storage_load_big_uint(balance_key.as_bytes());
 
         // return balance as big int
         balance
@@ -63,7 +63,7 @@ pub trait SimpleCoin {
     fn allowance(&self, sender: Address, recipient: Address) -> BigUint {
         // get allowance
         let allowance_key = self._allowance_key(&sender, &recipient);
-        let res = self.storage_load_big_uint(&allowance_key);
+        let res = self.storage_load_big_uint(allowance_key.as_bytes());
 
         // return allowance as big int
         res
@@ -73,7 +73,7 @@ pub trait SimpleCoin {
     fn _perform_transfer(&self, sender: Address, recipient: Address, amount: BigUint) -> Result<(), &str> {
         // load sender balance
         let sender_balance_key = self._balance_key(&sender);
-        let mut sender_balance = self.storage_load_big_uint(&sender_balance_key);
+        let mut sender_balance = self.storage_load_big_uint(sender_balance_key.as_bytes());
     
         // check if enough funds
         if &amount > &sender_balance {
@@ -82,13 +82,13 @@ pub trait SimpleCoin {
     
         // update sender balance
         sender_balance -= &amount;
-        self.storage_store_big_uint(&sender_balance_key, &sender_balance);
+        self.storage_store_big_uint(sender_balance_key.as_bytes(), &sender_balance);
     
         // load & update receiver balance
         let rec_balance_key = self._balance_key(&recipient);
-        let mut rec_balance = self.storage_load_big_uint(&rec_balance_key);
+        let mut rec_balance = self.storage_load_big_uint(rec_balance_key.as_bytes());
         rec_balance += &amount;
-        self.storage_store_big_uint(&rec_balance_key, &rec_balance);
+        self.storage_store_big_uint(rec_balance_key.as_bytes(), &rec_balance);
     
         // log operation
         self.transfer_event(&sender, &recipient, &amount);
@@ -112,7 +112,7 @@ pub trait SimpleCoin {
       
         // store allowance
         let allowance_key = self._allowance_key(&sender, &recipient);
-        self.storage_store_big_uint(&allowance_key, &amount);
+        self.storage_store_big_uint(allowance_key.as_bytes(), &amount);
       
         // log operation
         self.approve_event(&sender, &recipient, &amount);
@@ -126,7 +126,7 @@ pub trait SimpleCoin {
 
         // load allowance
         let allowance_key = self._allowance_key(&sender, &caller);
-        let mut allowance = self.storage_load_big_uint(&allowance_key);
+        let mut allowance = self.storage_load_big_uint(allowance_key.as_bytes());
 
         // amount should not exceed allowance
         if &amount > &allowance {
@@ -135,7 +135,7 @@ pub trait SimpleCoin {
 
         // update allowance
         allowance -= &amount;
-        self.storage_store_big_uint(&allowance_key, &allowance);
+        self.storage_store_big_uint(allowance_key.as_bytes(), &allowance);
 
         self._perform_transfer(sender, recipient, amount)
     }
