@@ -4,9 +4,14 @@
 #![allow(non_snake_case)]
 #![allow(unused_attributes)]
 
-use serde::{Serialize, Deserialize}
+use serde::{Serialize, Deserialize};
 
-// static ZERO_KEY: [u8; 32] = [0u8; 32];
+/// Serialization example
+#[derive(Serialize, Deserialize)]
+pub struct SerExample1 {
+    q1: u8,
+    q2: i32
+}
 
 #[elrond_wasm_derive::contract(ApiFeatureExamplesImpl)]
 pub trait ApiFeatureExamples {
@@ -81,6 +86,10 @@ pub trait ApiFeatureExamples {
         m
     }
 
+    fn echo_ser_example_1(&self, se: SerExample1) -> SerExample1 {
+        se
+    }
+
     // STORAGE STORE
 
     #[storage_set("big_uint")]
@@ -89,11 +98,20 @@ pub trait ApiFeatureExamples {
     #[storage_set("big_int")]
     fn store_big_int(&self, bi: BigInt);
 
+    #[storage_set("usize")]
+    fn store_usize(&self, i: usize);
+
     #[storage_set("i64")]
     fn store_i64(&self, i: i64);
 
+    #[storage_set("bool")]
+    fn store_bool(&self, i: bool);
+
     #[storage_set("vec_u8")]
     fn store_vec_u8(&self, arg: Vec<u8>);
+
+    #[storage_set("addr")]
+    fn store_addr(&self, arg: Address);
 
     #[storage_set("opt_addr")]
     fn store_opt_addr(&self, opt_addr: Option<Address>);
@@ -115,11 +133,20 @@ pub trait ApiFeatureExamples {
     #[storage_get("big_int")]
     fn load_big_int(&self) -> BigInt;
 
+    #[storage_get("usize")]
+    fn load_usize(&self) -> usize;
+
     #[storage_get("i64")]
     fn load_i64(&self) -> i64;
 
+    #[storage_get("bool")]
+    fn load_bool(&self) -> bool;
+
     #[storage_get("vec_u8")]
     fn load_vec_u8(&self) -> Vec<u8>;
+
+    #[storage_get("addr")]
+    fn load_addr(&self) -> Address;
 
     #[storage_get("opt_addr")]
     fn load_opt_addr(&self) -> Option<Address>;
@@ -132,14 +159,6 @@ pub trait ApiFeatureExamples {
 
     #[storage_get("map3")]
     fn load_map3(&self, x: usize) -> bool;
-
-    // OBJECT SERIALIZATION
-
-    #[derive(Serialize, Deserialize)]
-    pub struct Toy {
-        q1: u8,
-        q2: i32
-    }
 
     // EVENTS
 
