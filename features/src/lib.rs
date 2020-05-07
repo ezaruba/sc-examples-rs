@@ -4,7 +4,7 @@
 #![allow(non_snake_case)]
 #![allow(unused_attributes)]
 
-use serde::{Serialize, Deserialize};
+use ::serde::{Serialize, Deserialize};
 
 /// Serialization example
 #[derive(Serialize, Deserialize)]
