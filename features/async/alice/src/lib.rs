@@ -68,12 +68,17 @@ pub trait Alice {
     }
 
     #[callback]
-    fn payCallback(&self, cb_arg: i64) {
-        self.storage_store_i64(&CALLBACK_INFO_KEY, cb_arg);
+    fn payCallback(&self, call_result: AsyncCallResult<i64>) {
+        match call_result {
+            AsyncCallResult::Ok(cb_arg) => {
+                self.storage_store_i64(&CALLBACK_INFO_KEY, cb_arg);
+            },
+            AsyncCallResult::Err(_) => {}
+        }
     }
 
     #[callback]
-    fn messageCallback(&self) {
+    fn messageCallback(&self, _call_result: AsyncCallResult<()>) {
         self.storage_store_i64(&CALLBACK_INFO_KEY, 0x5555);
     }
 }
