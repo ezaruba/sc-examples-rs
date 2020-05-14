@@ -13,6 +13,15 @@ pub struct SerExample1 {
     q2: i32
 }
 
+#[derive(Serialize, Deserialize)]
+pub enum SerExample2 {
+    Unit1,
+    Unit2,
+    // Newtype(u32),
+    // Tuple(u32, u32),
+    // Struct { a: u32 },
+}
+
 #[elrond_wasm_derive::contract(ApiFeatureExamplesImpl)]
 pub trait ApiFeatureExamples {
 
@@ -86,6 +95,10 @@ pub trait ApiFeatureExamples {
         m
     }
 
+    fn echo_varags_u32(&self, _n: usize, #[var_args] m: Vec<u32>) -> Vec<u32> {
+        m
+    }
+
     fn echo_ser_example_1(&self, se: SerExample1) -> SerExample1 {
         se
     }
@@ -116,6 +129,12 @@ pub trait ApiFeatureExamples {
     #[storage_set("opt_addr")]
     fn store_opt_addr(&self, opt_addr: Option<Address>);
 
+    // #[storage_set("ser_1")]
+    // fn store_ser_1(&self, arg: SerExample1);
+
+    // #[storage_set("ser_2")]
+    // fn store_ser_2(&self, arg: SerExample2);
+
     #[storage_set("map1")]
     fn store_map1(&self, addr: Address, bi: BigUint);
 
@@ -124,6 +143,15 @@ pub trait ApiFeatureExamples {
 
     #[storage_set("map3")]
     fn store_map3(&self, x: usize, b: bool);
+
+    #[storage_set("ELRONDi64")]
+    fn store_reserved_i64(&self, i: i64);
+
+    #[storage_set("ELRONDBigUint")]
+    fn store_reserved_big_uint(&self, i: BigUint);
+
+    #[storage_set("ELRONDreserved")]
+    fn store_reserved_vec_u8(&self, i: Vec<u8>);
 
     // STORAGE LOAD
 
@@ -150,6 +178,12 @@ pub trait ApiFeatureExamples {
 
     #[storage_get("opt_addr")]
     fn load_opt_addr(&self) -> Option<Address>;
+
+    // #[storage_get("ser_1")]
+    // fn load_ser_1(&self) -> SerExample1;
+
+    // #[storage_get("ser_2")]
+    // fn load_ser_2(&self) -> SerExample2;
 
     #[storage_get("map1")]
     fn load_map1(&self, addr: Address) -> BigUint;
