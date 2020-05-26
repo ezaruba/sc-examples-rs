@@ -4,23 +4,31 @@
 #![allow(non_snake_case)]
 #![allow(unused_attributes)]
 
-use ::serde::{Serialize, Deserialize};
+imports!();
 
-/// Serialization example
-#[derive(Serialize, Deserialize)]
-pub struct SerExample1 {
-    q1: u8,
-    q2: i32
-}
+mod ser_ex1;
+mod ser_ex2;
 
-#[derive(Serialize, Deserialize)]
-pub enum SerExample2 {
-    Unit1,
-    Unit2,
-    // Newtype(u32),
-    // Tuple(u32, u32),
-    // Struct { a: u32 },
-}
+use ser_ex1::*;
+use ser_ex2::*;
+
+// use ::serde::{Serialize, Deserialize};
+
+// /// Serialization example
+// #[derive(Serialize, Deserialize)]
+// pub struct SerExample1 {
+//     q1: u8,
+//     q2: i32
+// }
+
+// #[derive(Serialize, Deserialize)]
+// pub enum SerExample2 {
+//     Unit1,
+//     Unit2,
+//     // Newtype(u32),
+//     // Tuple(u32, u32),
+//     // Struct { a: u32 },
+// }
 
 #[elrond_wasm_derive::contract(ApiFeatureExamplesImpl)]
 pub trait ApiFeatureExamples {
@@ -43,6 +51,10 @@ pub trait ApiFeatureExamples {
     }
 
     fn echo_i64(&self, i: i64) -> i64 {
+        i
+    }
+
+    fn echo_u64(&self, i: u64) -> u64 {
         i
     }
 
@@ -179,11 +191,11 @@ pub trait ApiFeatureExamples {
     #[storage_get("opt_addr")]
     fn load_opt_addr(&self) -> Option<Address>;
 
-    // #[storage_get("ser_1")]
-    // fn load_ser_1(&self) -> SerExample1;
+    #[storage_get("ser_1")]
+    fn load_ser_1(&self) -> SerExample1;
 
-    // #[storage_get("ser_2")]
-    // fn load_ser_2(&self) -> SerExample2;
+    #[storage_get("ser_2")]
+    fn load_ser_2(&self) -> SerExample2;
 
     #[storage_get("map1")]
     fn load_map1(&self, addr: Address) -> BigUint;
