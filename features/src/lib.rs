@@ -115,6 +115,12 @@ pub trait ApiFeatureExamples {
         se
     }
 
+    // OPERATIONS THAT HAVE CAUSED ISSUES IN THE PAST
+
+    fn count_ones(&self, arg: u64) -> u32 {
+        arg.count_ones()
+    }
+
     // STORAGE STORE
 
     #[storage_set("big_uint")]
