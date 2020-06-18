@@ -7,7 +7,7 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-elrond-wasm = "0.4.2"
-elrond-wasm-debug = "0.4.2"
+elrond-wasm = "0.4.5"
+elrond-wasm-debug = "0.4.5"
 
 crypto-bubbles = { path = ".." }

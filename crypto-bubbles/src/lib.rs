@@ -4,6 +4,8 @@
 #![allow(non_snake_case)]
 #![allow(unused_attributes)]
 
+imports!();
+
 static OWNER_KEY: &[u8] = &[0u8; 32];
 
 #[elrond_wasm_derive::contract(CryptoBubblesImpl)]
