@@ -95,19 +95,19 @@ pub trait ApiFeatureExamples {
         (arg, l)
     }
 
-    fn echo_multi_i32(&self, _n: usize, #[multi(_n)] m: Vec<i32>) -> Vec<i32> {
+    fn echo_multi_i32(&self, _n: usize, #[multi(_n)] m: Vec<i32>) -> MultiResultVec<i32> {
         m
     }
 
-    fn echo_multi_vec_u8(&self, _n: usize, #[multi(_n)] m: Vec<Vec<u8>>) -> Vec<Vec<u8>> {
+    fn echo_multi_vec_u8(&self, _n: usize, #[multi(_n)] m: Vec<Vec<u8>>) -> MultiResultVec<Vec<u8>> {
         m
     }
 
-    fn echo_multi_h256(&self, _n: usize, #[multi(_n)] m: Vec<H256>) -> Vec<H256> {
+    fn echo_multi_h256(&self, _n: usize, #[multi(_n)] m: Vec<H256>) -> MultiResultVec<H256> {
         m
     }
 
-    fn echo_varags_u32(&self, _n: usize, #[var_args] m: Vec<u32>) -> Vec<u32> {
+    fn echo_varags_u32(&self, _n: usize, #[var_args] m: Vec<u32>) -> MultiResultVec<u32> {
         m
     }
 
